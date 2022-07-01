@@ -1,7 +1,7 @@
 struct Hists{
-  TH2D Res_2pP={"Res_2pP","resolution proton P",50,0,10,100,-1,1};
-  TH1D Res_pP={"Res_pP","resolution proton P",100,-1,1};
-  TH1D Diff_pP={"Diff_pP","difference proton P",100,-2,2};
+  TH2D Res_2pP={"Res_2pP","resolution proton P [GeV]",50,0,10,100,-1,1};
+  TH1D Res_pP={"Res_pP","resolution proton P [GeV]",100,-1,1};
+  TH1D Diff_pP={"Diff_pP","difference proton P [GeV]",100,-2,2};
   // TH1D Res_pP={"Res_pP","resolution proton P",100,-1,1};
   // TH1D Diff_pP={"Diff_pP","difference proton P",100,-1,1};
 
@@ -46,7 +46,7 @@ struct Hists{
     can->cd(2);
     Diff_TotP.DrawCopy();
    can=new TCanvas;
-    can->Divide(3,1);
+   can->Divide(3,1);
    can->cd(1);
    Res_2pP.DrawCopy("col2");
    can->cd(2);
@@ -57,22 +57,22 @@ struct Hists{
   }
 };
 struct HistsPhys{
-  TH1D hM2pi={"M2pi","Invariant Mass #pi+#pi-",1000,0,4};
-  TH1D hW={"W","W",1000,2,6};
-  TH1D hCosTh={"CosTh","cos(#theta_{GJ})",1000,-1,1};
-  TH1D hPhi={"Phi","#phi_{GJ}",1000,-TMath::Pi(),TMath::Pi()};
-  TH1D hCMCosTh={"CosTh","cos(#theta_{CM})",1000,-1,1};
-  TH1D hCMPhi={"Phi","#phi_{CM}",1000,-TMath::Pi(),TMath::Pi()};
+  TH1D hM2pi={"M2pi","Invariant Mass #pi+#pi- [GeV/c^{2}]",110,0.3,3.6};
+  TH1D hW={"W","W [GeV/c^{2}]",110,3,4.8};
+  TH1D hCosTh={"CosTh","cos(#theta_{GJ})",110,-1,1};
+  TH1D hPhi={"Phi","#phi_{GJ} [Degrees]",110,-180,180};
+  TH1D hCMCosTh={"CosTh","cos(#theta_{CM})",110,-1,1};
+  TH1D hCMPhi={"Phi","#phi_{CM} [Degrees]",110,-180,180};
 
-  TH1D hpP={"pP","p momentum",100,0,10};
-  TH1D hpTheta={"pTheta","p cos(#theta)",100,0,60};
-  TH1D hpPhi={"pPhi","p #phi",100,-TMath::Pi(),TMath::Pi()};
-  TH1D hpimP={"pimP","pim momentum",100,0,10};
-  TH1D hpimTheta={"pimTheta","#pi- cos(#theta)",100,0,60};
-  TH1D hpimPhi={"pimPhi","#pi- #phi",100,-TMath::Pi(),TMath::Pi()};
-  TH1D hpipP={"pipP","#pi+ momentum",100,0,10};
-  TH1D hpipTheta={"pipTheta","#pi+ cos(#theta)",100,0,60};
-  TH1D hpipPhi={"pipPhi","#pi+ #phi",100,-TMath::Pi(),TMath::Pi()};
+  TH1D hpP={"pP","proton Momentum [GeV]",100,0,10};
+  TH1D hpTheta={"pTheta","proton #theta [Degrees]",100,0,60};
+  TH1D hpPhi={"pPhi","proton #phi [Degrees]",100,-180,180};
+  TH1D hpimP={"pimP","#pi- Momentum [GeV]",100,0,10};
+  TH1D hpimTheta={"pimTheta","#pi- #theta [Degrees]",100,0,60};
+  TH1D hpimPhi={"pimPhi","#pi- #phi [Degrees]",100,-180,180};
+  TH1D hpipP={"pipP","#pi+ Momentum [GeV]",100,0,10};
+  TH1D hpipTheta={"pipTheta","#pi+ #theta [Degrees]",100,0,60};
+  TH1D hpipPhi={"pipPhi","#pi+ #phi [Degrees]",100,-180,180};
 
   
   void Draw(){
@@ -95,6 +95,20 @@ struct HistsPhys{
   }
   HistsPhys Divide(const HistsPhys& di){
     auto ratio=*this;
+    ratio.hW.Sumw2();
+    ratio.hM2pi.Sumw2();
+    ratio.hCMCosTh.Sumw2();
+    ratio.hCMPhi.Sumw2();
+    ratio.hCosTh.Sumw2();
+    ratio.hPhi.Sumw2();
+    
+    ratio.hW.SetMaximum(2);
+    ratio.hM2pi.SetMaximum(2);
+    ratio.hCMCosTh.SetMaximum(2);
+    ratio.hCMPhi.SetMaximum(2);
+    ratio.hCosTh.SetMaximum(2);
+    ratio.hPhi.SetMaximum(2);
+    
     ratio.hW.Divide(&di.hW);
     ratio.hM2pi.Divide(&di.hM2pi);
     ratio.hCMCosTh.Divide(&di.hCMCosTh);
@@ -107,41 +121,50 @@ struct HistsPhys{
   void DrawPOnCanvas(TCanvas* can,TString opt,Int_t colour){
     can->cd(1);
     hpP.SetMinimum(0);
-    hpP.SetLineColor(colour); 
+    hpP.SetLineColor(colour);
+    hpP.GetXaxis()->SetTitle(hpP.GetTitle());
     hpP.DrawCopy(opt);
     can->cd(2);
     hpTheta.SetMinimum(0);
     hpTheta.SetLineColor(colour); 
+    hpTheta.GetXaxis()->SetTitle(hpTheta.GetTitle());
     hpTheta.DrawCopy(opt);
     can->cd(3);
     hpPhi.SetMinimum(0);
     hpPhi.SetLineColor(colour); 
+    hpPhi.GetXaxis()->SetTitle(hpPhi.GetTitle());
     hpPhi.DrawCopy(opt);
 
     can->cd(4);
     hpipP.SetMinimum(0);
     hpipP.SetLineColor(colour); 
+    hpipP.GetXaxis()->SetTitle(hpipP.GetTitle());
     hpipP.DrawCopy(opt);
     can->cd(5);
     hpipTheta.SetMinimum(0);
     hpipTheta.SetLineColor(colour); 
+    hpipTheta.GetXaxis()->SetTitle(hpipTheta.GetTitle());
     hpipTheta.DrawCopy(opt);
     can->cd(6);
     hpipPhi.SetMinimum(0);
     hpipPhi.SetLineColor(colour); 
+    hpipPhi.GetXaxis()->SetTitle(hpipPhi.GetTitle());
     hpipPhi.DrawCopy(opt);
 
     can->cd(7);
     hpimP.SetMinimum(0);
     hpimP.SetLineColor(colour); 
+    hpimP.GetXaxis()->SetTitle(hpimP.GetTitle());
     hpimP.DrawCopy(opt);
     can->cd(8);
     hpimTheta.SetMinimum(0);
     hpimTheta.SetLineColor(colour); 
+    hpimTheta.GetXaxis()->SetTitle(hpimTheta.GetTitle());
     hpimTheta.DrawCopy(opt);
     can->cd(9);
     hpimPhi.SetMinimum(0);
     hpimPhi.SetLineColor(colour); 
+    hpimPhi.GetXaxis()->SetTitle(hpimPhi.GetTitle());
     hpimPhi.DrawCopy(opt);
 
   }
@@ -149,32 +172,38 @@ struct HistsPhys{
  
     can->cd(1);
     hW.SetMinimum(0);
+    hW.GetXaxis()->SetTitle(hW.GetTitle());
     hW.SetLineColor(colour); 
     hW.DrawCopy(opt);
 
     can->cd(4);
     hM2pi.SetMinimum(0);
     hM2pi.SetLineColor(colour);  
+    hM2pi.GetXaxis()->SetTitle(hM2pi.GetTitle());
     hM2pi.DrawCopy(opt);
 
     can->cd(2);
     hCMCosTh.SetMinimum(0);
     hCMCosTh.SetLineColor(colour);  
+    hCMCosTh.GetXaxis()->SetTitle(hCMCosTh.GetTitle());
     hCMCosTh.DrawCopy(opt);
     
     can->cd(5);
     hCMPhi.SetMinimum(0);
     hCMPhi.SetLineColor(colour);  
+    hCMPhi.GetXaxis()->SetTitle(hCMPhi.GetTitle());
     hCMPhi.DrawCopy(opt);
 
     can->cd(3);
     hCosTh.SetMinimum(0);
     hCosTh.SetLineColor(colour);  
+    hCosTh.GetXaxis()->SetTitle(hCosTh.GetTitle());
     hCosTh.DrawCopy(opt);
 
     can->cd(6);
     hPhi.SetMinimum(0);
     hPhi.SetLineColor(colour);  
+    hPhi.GetXaxis()->SetTitle(hPhi.GetTitle());
     hPhi.DrawCopy(opt);
     
   }
@@ -199,13 +228,13 @@ struct HistsPhys{
 
     hpP.Fill(fBar.Rho());
     hpTheta.Fill(fBar.Theta()*TMath::RadToDeg());
-    hpPhi.Fill(fBar.Phi());
+    hpPhi.Fill(fBar.Phi()*TMath::RadToDeg());
     hpipP.Fill(fMes_d1.Rho());
     hpipTheta.Fill(fMes_d1.Theta()*TMath::RadToDeg());
-    hpipPhi.Fill(fMes_d1.Phi());
+    hpipPhi.Fill(fMes_d1.Phi()*TMath::RadToDeg());
     hpimP.Fill(fMes_d2.Rho());
     hpimTheta.Fill(fMes_d2.Theta()*TMath::RadToDeg());
-    hpimPhi.Fill(fMes_d2.Phi());
+    hpimPhi.Fill(fMes_d2.Phi()*TMath::RadToDeg());
  
   }
  
@@ -214,7 +243,7 @@ struct HistsPhys{
      fBar.Boost(decBoost);
 
      _CMcosTh=TMath::Cos(fBar.Theta());
-     _CMphi=fBar.Phi();
+     _CMphi=fBar.Phi()*TMath::RadToDeg();
      
    }
   ////////////////////////////////////////////////////////
@@ -233,7 +262,7 @@ struct HistsPhys{
     TVector3 angles(fMes_d1.Vect().Dot(xV),fMes_d1.Vect().Dot(yV),fMes_d1.Vect().Dot(zV));
     
     _cosTh=angles.CosTheta();
-    _phi=angles.Phi();
+    _phi=angles.Phi()*TMath::RadToDeg();
 
      
    }
@@ -245,22 +274,22 @@ struct HistsPhys{
 };
 
 struct HistsPhysRes{
-  TH1D hM2pi={"M2pi","Invariant Mass #pi+#pi-",1000,-1,1};
-  TH1D hW={"W","W",1000,-1,1};
-  TH1D hCosTh={"CosTh","cos(#theta_{GJ})",1000,-0.3,0.3};
-  TH1D hPhi={"Phi","#phi_{GJ}",1000,-0.3,0.3};
-  TH1D hCMCosTh={"CosTh","cos(#theta_{CM})",1000,-0.3,0.3};
-  TH1D hCMPhi={"Phi","#phi_{CM}",1000,-0.3,0.3};
+  TH1D hM2pi={"M2pi","Invariant Mass #pi+#pi- [GeV/c^{2}]",110,-1,1};
+  TH1D hW={"W","W [GeV/c^{2}]",110,-1,1};
+  TH1D hCosTh={"CosTh","cos(#theta_{GJ})",110,-0.3,0.3};
+  TH1D hPhi={"Phi","#phi_{GJ} [Degrees]",110,-2,2};
+  TH1D hCMCosTh={"CosTh","cos(#theta_{CM})",110,-0.3,0.3};
+  TH1D hCMPhi={"Phi","#phi_{CM} [Degrees]",110,-2,2};
 
-  TH1D hpP={"pP","#Delta p momentum",100,-2,2};
-  TH1D hpTheta={"pTheta","#Delta p #theta",100,-3,3};
-  TH1D hpPhi={"pPhi","#Delta p #phi",100,-15,15};
-  TH1D hpimP={"pimP","#Delta pim momentum",100,-2,2};
-  TH1D hpimTheta={"pimTheta","#Delta #pi- #theta",100,-3,3};
-  TH1D hpimPhi={"pimPhi","#Delta #pi- #phi",100,-15,15};
-  TH1D hpipP={"pipP","#Delta #pi+ momentum",100,-2,2};
-  TH1D hpipTheta={"pipTheta","#Delta #pi+ #theta",100,-3,3};
-  TH1D hpipPhi={"pipPhi","#Delta #pi+ #phi",100,-15,15};
+  TH1D hpP={"pP","#Delta proton Momentum [GeV]",100,-2,2};
+  TH1D hpTheta={"pTheta","#Delta proton #theta [Degrees]",100,-3,3};
+  TH1D hpPhi={"pPhi","#Delta proton #phi [Degrees]",100,-15,15};
+  TH1D hpimP={"pimP","#Delta #pi- Momentum [GeV]",100,-2,2};
+  TH1D hpimTheta={"pimTheta","#Delta #pi- #theta [Degrees]",100,-3,3};
+  TH1D hpimPhi={"pimPhi","#Delta #pi- #phi [Degrees]",100,-15,15};
+  TH1D hpipP={"pipP","#Delta #pi+ Momentum [GeV]",100,-2,2};
+  TH1D hpipTheta={"pipTheta","#Delta #pi+ #theta [Degrees]",100,-3,3};
+  TH1D hpipPhi={"pipPhi","#Delta #pi+ #phi [Degrees]",100,-15,15};
   void Draw(){
     auto can=new TCanvas;
     can->Divide(3,2);
@@ -285,31 +314,37 @@ struct HistsPhysRes{
     can->cd(1);
     hW.SetMinimum(0);
     hW.SetLineColor(colour); 
+    hW.GetXaxis()->SetTitle(hW.GetTitle());
     hW.DrawCopy(opt);
 
     can->cd(4);
     hM2pi.SetMinimum(0);
     hM2pi.SetLineColor(colour);  
+    hM2pi.GetXaxis()->SetTitle(hM2pi.GetTitle());
     hM2pi.DrawCopy(opt);
 
     can->cd(2);
     hCMCosTh.SetMinimum(0);
     hCMCosTh.SetLineColor(colour);  
+    hCMCosTh.GetXaxis()->SetTitle(hCMCosTh.GetTitle());
     hCMCosTh.DrawCopy(opt);
     
     can->cd(5);
     hCMPhi.SetMinimum(0);
     hCMPhi.SetLineColor(colour);  
+    hCMPhi.GetXaxis()->SetTitle(hCMPhi.GetTitle());
     hCMPhi.DrawCopy(opt);
 
     can->cd(3);
     hCosTh.SetMinimum(0);
     hCosTh.SetLineColor(colour);  
+    hCosTh.GetXaxis()->SetTitle(hCosTh.GetTitle());
     hCosTh.DrawCopy(opt);
 
     can->cd(6);
     hPhi.SetMinimum(0);
     hPhi.SetLineColor(colour);  
+    hPhi.GetXaxis()->SetTitle(hPhi.GetTitle());
     hPhi.DrawCopy(opt);
     
   }
@@ -317,40 +352,49 @@ void DrawPOnCanvas(TCanvas* can,TString opt,Int_t colour){
     can->cd(1);
     hpP.SetMinimum(0);
     hpP.SetLineColor(colour); 
+    hpP.GetXaxis()->SetTitle(hpP.GetTitle());
     hpP.DrawCopy(opt);
     can->cd(2);
     hpTheta.SetMinimum(0);
     hpTheta.SetLineColor(colour); 
+    hpTheta.GetXaxis()->SetTitle(hpTheta.GetTitle());
     hpTheta.DrawCopy(opt);
     can->cd(3);
     hpPhi.SetMinimum(0);
     hpPhi.SetLineColor(colour); 
+    hpPhi.GetXaxis()->SetTitle(hpPhi.GetTitle());
     hpPhi.DrawCopy(opt);
 
     can->cd(4);
     hpipP.SetMinimum(0);
     hpipP.SetLineColor(colour); 
+    hpipP.GetXaxis()->SetTitle(hpipP.GetTitle());
     hpipP.DrawCopy(opt);
     can->cd(5);
     hpipTheta.SetMinimum(0);
     hpipTheta.SetLineColor(colour); 
+    hpipTheta.GetXaxis()->SetTitle(hpipTheta.GetTitle());
     hpipTheta.DrawCopy(opt);
     can->cd(6);
     hpipPhi.SetMinimum(0);
     hpipPhi.SetLineColor(colour); 
+    hpipPhi.GetXaxis()->SetTitle(hpipPhi.GetTitle());
     hpipPhi.DrawCopy(opt);
 
     can->cd(7);
     hpimP.SetMinimum(0);
     hpimP.SetLineColor(colour); 
+    hpimP.GetXaxis()->SetTitle(hpimP.GetTitle());
     hpimP.DrawCopy(opt);
     can->cd(8);
     hpimTheta.SetMinimum(0);
     hpimTheta.SetLineColor(colour); 
+    hpimTheta.GetXaxis()->SetTitle(hpimTheta.GetTitle());
     hpimTheta.DrawCopy(opt);
     can->cd(9);
     hpimPhi.SetMinimum(0);
     hpimPhi.SetLineColor(colour); 
+    hpimPhi.GetXaxis()->SetTitle(hpimPhi.GetTitle());
     hpimPhi.DrawCopy(opt);
 
   }
@@ -437,35 +481,60 @@ void CreateP4(TLorentzVector& v,Double_t p,Double_t theta,Double_t phi,Double_t 
 
 
 void Reconstruct_Reaction_Mac(){
+  gStyle->SetLabelSize(0.05);
+  gStyle->SetLabelSize(0.05,"Y");
+  gStyle->SetTitleXSize(0.06);
+  gStyle->SetTitleXOffset(0.9);
+  gStyle->SetTitleYSize(0.06);
+  gStyle->SetTitleYOffset(0.8);
+ // set margin sizes
   
+  gStyle->SetPadTopMargin(0.05);
+  gStyle->SetPadRightMargin(0.05);
+  gStyle->SetPadBottomMargin(0.16);
+  gStyle->SetPadLeftMargin(0.16);
+  //Int_t font=42; // Helvetica
+  Int_t font=2; // Times new Roman bold
+  gStyle->SetTextFont(font);
+  gStyle->SetOptTitle(0);
+  gStyle->SetOptStat(0);
+  gStyle->SetOptFit(0);
+  gStyle->SetPadTickX(1);
+  gStyle->SetPadTickY(1);
+
+
+
+
+
+
   TTreeReader     fReader;  //!the tree reader
   
   auto file= TFile::Open("toy_reaction.root");
   auto tree= file->Get<TTree>("tree");
   tree->SetEntries(5E6);
-  auto filePip= TFile::Open("results/pi+/predictions.root");
+  auto filePip= TFile::Open("results_norm3/pi+/predictions.root");
   auto treeFastPip= filePip->Get<TTree>("recon");
   treeFastPip->SetName("tree_fast");
   tree->AddFriend(treeFastPip);
-  auto fileAccPip= TFile::Open("results/pi+/simulation_acceptances.root");
+  auto fileAccPip= TFile::Open("results_norm3/pi+/simulation_acceptances.root");
   auto treeFastAccPip= fileAccPip->Get<TTree>("acceptance");
   treeFastAccPip->SetName("acc_pip");
   tree->AddFriend(treeFastAccPip);
   
-  auto filePim= TFile::Open("results/pi-/predictions.root");
+  auto filePim= TFile::Open("results_norm3/pi-/predictions.root");
   auto treeFastPim= filePim->Get<TTree>("recon");
   treeFastPim->SetName("tree_fast");
   tree->AddFriend(treeFastPim);
-  auto fileAccPim= TFile::Open("results/pi-/simulation_acceptances.root");
+  auto fileAccPim= TFile::Open("results_norm3/pi-/simulation_acceptances.root");
   auto treeFastAccPim= fileAccPim->Get<TTree>("acceptance");
   treeFastAccPim->SetName("acc_pim");
   tree->AddFriend(treeFastAccPim);
 
-  auto fileP= TFile::Open("results/proton/predictions.root");
+  auto fileP= TFile::Open("results_norm3/proton/predictions.root");
   auto treeFastP= fileP->Get<TTree>("recon");
   treeFastP->SetName("tree_fast");
   tree->AddFriend(treeFastP);
-  auto fileAccP= TFile::Open("results/proton/simulation_acceptances.root");
+  auto fileAccP= TFile::Open("results_norm3/proton/simulation_acceptances.root");
   auto treeFastAccP= fileAccP->Get<TTree>("acceptance");
   treeFastAccP->SetName("acc_p");
   tree->AddFriend(treeFastAccP);
@@ -551,6 +620,8 @@ void Reconstruct_Reaction_Mac(){
      }
      if(*fast_acc_p){
        hf.Res_pP.Fill(*tr_pP-*fast_pP);
+     }
+     if(*accepted_p&&*fast_acc_p){
        hf.Res_2pP.Fill(*tr_pP,*tr_pP-*fast_pP);
      }    
      if(*accepted_p&&*fast_acc_p) hf.Diff_pP.Fill(*rec_pP-*fast_pP);
@@ -561,8 +632,10 @@ void Reconstruct_Reaction_Mac(){
      }
      if(*fast_acc_pip){
        hf.Res_pipP.Fill(*tr_pipP-*fast_pipP);
-       hf.Res_2pipP.Fill(*tr_pipP,*tr_pipP-*fast_pipP);
-    }
+     }
+     if(*accepted_pip&&*fast_acc_pip){
+        hf.Res_2pipP.Fill(*tr_pipP,*tr_pipP-*fast_pipP);
+     }
      if(*accepted_pip&&*fast_acc_pip) hf.Diff_pipP.Fill(*rec_pipP-*fast_pipP);
 
      if(*accepted_pim){
@@ -571,13 +644,16 @@ void Reconstruct_Reaction_Mac(){
      }
      if(*fast_acc_pim){
        hf.Res_pimP.Fill(*tr_pimP-*fast_pimP);
+     }
+     if(*accepted_pim&&*fast_acc_pim){
+       hf.Res_pimP.Fill(*tr_pimP-*fast_pimP);
        hf.Res_2pimP.Fill(*tr_pimP,*tr_pimP-*fast_pimP);
      }
      if(*accepted_pim&&*fast_acc_pim) hf.Diff_pimP.Fill(*rec_pimP-*fast_pimP);
      
      if(*accepted_pim&&*accepted_pip&&*accepted_p)
        hr.Res_TotP.Fill(*tr_pimP-*rec_pimP + *tr_pipP-*rec_pipP + *tr_pP-*rec_pP);
-     if(*fast_acc_pim)
+     if(*fast_acc_pim&&*fast_acc_pip&&*fast_acc_p)
        hf.Res_TotP.Fill(*tr_pimP-*fast_pimP + *tr_pipP-*fast_pipP + *tr_pP-*fast_pP);
 
      if(*accepted_pim&&*fast_acc_pim&&*accepted_pip&&*fast_acc_pip&&*accepted_p&&*fast_acc_p)
@@ -616,10 +692,11 @@ void Reconstruct_Reaction_Mac(){
      }
      //fast accepted
      if(*fast_acc_p&&*fast_acc_pip&&*fast_acc_pim){
+     //if(*accepted_p&&*accepted_pip&&*accepted_pim){
        // physf.Fill(recP4_p,photon,recP4_pip,recP4_pim);
        //physResf.Fill(recP4_p,photon,recP4_pip,recP4_pim,truP4_p,photon,truP4_pip,truP4_pim);
-        physf.Fill(fastP4_p,photon,fastP4_pip,fastP4_pim);
-        physResf.Fill(fastP4_p,photon,fastP4_pip,fastP4_pim,truP4_p,photon,truP4_pip,truP4_pim);
+       physf.Fill(fastP4_p,photon,fastP4_pip,fastP4_pim);
+       physResf.Fill(fastP4_p,photon,fastP4_pip,fastP4_pim,truP4_p,photon,truP4_pip,truP4_pim);
  
      }
 
@@ -658,6 +735,8 @@ void Reconstruct_Reaction_Mac(){
    can->cd(2);
    fpiDiff.DrawCopy("col1");
 
-   auto ratio=physr.Divide(physf);
-   ratio.Draw();
+   can =new TCanvas();
+   can->Divide(3,2);
+   auto ratio=physf.Divide(physr);
+   ratio.DrawOnCanvas(can,"e",2);
 }

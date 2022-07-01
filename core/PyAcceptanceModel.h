@@ -27,7 +27,7 @@ class PyAcceptanceModel : public AcceptanceModel {
     TPython::Bind( &dl, "df" );
     TPython::Bind( ModelDir(), "save_dir" );
     TPython::Bind( &_do_gauss, "do_gauss" );
-    TPython::LoadMacro( (_pyDir + Macro()).data() );
+    if(_dontTrain==false)TPython::LoadMacro( (_pyDir + Macro()).data() );
     
     gBenchmark->Stop(ModelName().c_str());
     gBenchmark->Print(ModelName().c_str());
@@ -43,10 +43,11 @@ class PyAcceptanceModel : public AcceptanceModel {
   virtual const string& Macro()  = 0;
 
   void SetGaussianTransform(){_do_gauss="TRUE";}
-  
+  void DontTrain(){_dontTrain=true;}
 private:
   
   TObjString _do_gauss="FALSE";
   std::string _pyDir;
+  bool _dontTrain=false;
   
 };

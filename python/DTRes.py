@@ -10,7 +10,7 @@ from joblib import load, dump
 dfdata=df.DataFrame()
 x_vars =df.GetNormTruthVars()
 n_xvars= x_vars.size()
-y_vars=df.GetDiffVars()
+y_vars=df.GetNormDiffVars()
 n_yvars=y_vars.size()
 
 print('DTRes.py : will train with x variables ',x_vars)
@@ -22,8 +22,6 @@ x_array = np.vstack([x_data[xkey] for xkey in x_data.keys()]).T
 
 y_data = dfdata.Filter(df.GetAcceptCondition(1)).AsNumpy(y_vars);
 y_array = np.vstack([y_data[ykey] for ykey in y_data.keys()]).T
-
-
 
 ############################################################################
 ###TRAIN MODELS AND SAVE TO DISC
@@ -44,6 +42,8 @@ saveto = save_dir.GetName() + '/'
 for i in range(dtconf.n_regs):
     model= DecisionTreeRegressor() 
     x_fit= addRandomInputs(x_array)
+    print('shape of input ',x_fit.shape)
+    print('shape of output ',y_array.shape)
     model.fit(x_fit,y_array)
     dump(model,saveto+dtconf.model_name+ str(i) +'.joblib')
   

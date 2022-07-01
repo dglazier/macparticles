@@ -42,15 +42,19 @@ if(do_bdt_reweight.GetName()=="TRUE"):
 ##########################################################################
 ###GAUSSIAN TRANSFORM SIMULATION VARIABLES IF REQUIRED
 ##########################################################################
+#sim_data_gaus=sim_data
 if(do_gauss.GetName()=="TRUE"):
     gauss_transform = load(accdir+'gaussscaler.joblib')
-    sim_data=gauss_transform.transform(sim_data[:,:nvars])
+    sim_data_gaus=gauss_transform.transform(sim_data[:,:nvars].copy())
+    probs = acc_model.predict(sim_data_gaus)
     del gauss_transform
-
-##########################################################################
-###GET DETECTION PROBABILIES FROM MODEL
-##########################################################################
-probs = acc_model.predict(sim_data)
+    del sim_data_gaus
+else:
+    ##########################################################################
+    ###GET DETECTION PROBABILIES FROM MODEL
+    ##########################################################################
+    probs = acc_model.predict(sim_data)
+    
 weights = probs/(1-probs)
 
 ##########################################################################
@@ -59,8 +63,12 @@ weights = probs/(1-probs)
 if(do_bdt_reweight.GetName()=="TRUE"):
     extra_probs = bdt.predict_proba(sim_data)[:,1]
     extra_weights = extra_probs/(1-extra_probs)
+    print(weights)
+    print(extra_weights)
     weights = weights.T*(extra_weights)
     weights = weights.T
+    print(weights)
+    
     del extra_probs
     del extra_weights
     del bdt

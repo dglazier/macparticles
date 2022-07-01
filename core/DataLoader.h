@@ -12,9 +12,14 @@
 using std::string;
 
 struct DataVariable{
+  
   string name;
-  Double_t min;
-  Double_t max;
+  Double_t min; //user defined min
+  Double_t max; //user define max
+  Double_t diffOffset; //DataLoader calculated offset in difference 
+  Double_t diffRange;  //DataLoader calculated difference range
+
+
 };
 
 class DataLoader: public TObject{ //for TPython
@@ -34,6 +39,7 @@ class DataLoader: public TObject{ //for TPython
 
   
   void SetTruthVars(const varnames_t& vars){_truthVars=vars;}
+  
   void DetailedTruthVars(const datavars_t& vars){
     //Set truth values here if you want to use plotter
     _dtruthVars=vars;
@@ -43,32 +49,49 @@ class DataLoader: public TObject{ //for TPython
       _truthVars.push_back(var.name);
     }
   }
+
+  void TakeDetailedVarsInfo( datavars_t vars){
+
+    if(vars.size()!=_truthVars.size())
+      Fatal("DataLoader::DetailedVarsInfo","Number of training vars do not match simulation vars.");
+
+    for(UInt_t i=0;i<vars.size();++i){
+      std::cout<< "DataLoader::TakeDetailedVarsInfo mapping new variable  = " <<_truthVars[i] <<" , to training variable " <<vars[i].name <<std::endl;
+      vars[i].name = _truthVars[i];
+    }
+    //now set the detailed vars for use in simulation
+    _truthVars.clear(); //they will get filled again.
+    DetailedTruthVars(vars); 
+  }
+  
   void SetDiffVars(const varnames_t& vars){_diffVars=vars;}
   void SetReconVars(const varnames_t& vars){_reconVars=vars;}
   void SetAcceptVar(const string& var){_acceptVar=var;}
   void SetFastAcceptVar(const string& var){_fastAccVar=var;}
   void SetPDGVar(const string& var){_pdgVar=var;}
   
-  const varnames_t GetTruthVars(){return _truthVars;}
-  const varnames_t GetReconVars(){return _reconVars;}
-  const varnames_t GetDiffVars(){return _diffVars;}
-  const varnames_t GetRandVars(){return _randVars;}
-  const varnames_t GetNormTruthVars(){return _normTruthVars;}
-  const string GetAcceptVar(){return _acceptVar;}
-  const string GetPDGVar(){return _pdgVar;}
+  varnames_t GetTruthVars()const {return _truthVars;}
+  varnames_t GetReconVars()const {return _reconVars;}
+  varnames_t GetDiffVars()const {return _diffVars;}
+  varnames_t GetRandVars()const {return _randVars;}
+  varnames_t GetNormTruthVars()const {return _normTruthVars;}
+  varnames_t GetNormDiffVars()const {return _normDiffVars;}
+  string GetAcceptVar()const {return _acceptVar;}
+  string GetPDGVar()const {return _pdgVar;}
 
-  DataVariable& GetDataVar(const string& var){return _dtruthVars[_varIndex[var]];}
+  const DataVariable& GetDataVar(const string& var) {return _dtruthVars[_varIndex[var]];}
+  datavars_t GetDetailedVars()const {return _dtruthVars;}
   
-  const string GetAcceptCondition(Int_t val=1){return Form("%s==%d",_acceptVar.c_str(),val);}
-  const string GetInitAcceptCondition(Int_t val=1){
+  string GetAcceptCondition(Int_t val=1){return Form("%s==%d",_acceptVar.c_str(),val);}
+  string GetInitAcceptCondition(Int_t val=1){
     //if initial accept defined filter on ==1, else always accept 
     return _fastAccVar.empty() ? "1" : Form("%s==%d",_fastAccVar.c_str(),val);
   }
   
   //Previously determined modelled fast weights
-  const string GetFastAcceptVar(){return _fastAccVar;}
-  const string GetFastAcceptWeight(){return _fastAccWeight;}
-  const string GetFastReweightVar(){return _fastReWeight;}
+  string GetFastAcceptVar()const {return _fastAccVar;}
+  string GetFastAcceptWeight()const {return _fastAccWeight;}
+  string GetFastReweightVar()const {return _fastReWeight;}
   
   void Range(Long64_t min, Long64_t max){
     _currNode = DataFrame().Range(min,max);
@@ -81,7 +104,6 @@ class DataLoader: public TObject{ //for TPython
     return _currNode;
   }
 
-  //Define("rand_in1", [](){return gRandom->Uniform();});
   void DefineColumn(std::string_view name, std::string_view expression){
     _currNode=DataFrame().Define(name,expression);
   }
@@ -98,14 +120,42 @@ class DataLoader: public TObject{ //for TPython
       Fatal("DataLoader::AddDifferenceVars","No truth variables defined");
     if(_truthVars.size()!=_reconVars.size())
       Fatal("DataLoader::AddDifferenceVars","Number Reconstructed variables do not match truth");
+
+    using result_double_t = ROOT::RDF::RResultPtr< ROOT::RDF::RDFDetail::MinReturnType_t< Double_t > >;
+
+    std::vector<result_double_t> means;
+    std::vector<result_double_t> sigmas;
+
     for(UInt_t i=0;i<_truthVars.size();++i){
       auto diffname=_truthVars[i]+"_m_"+_reconVars[i];
       _diffVars.push_back(diffname);
       DefineColumn(diffname,_truthVars[i]+"-"+_reconVars[i]);
+      auto resultMean = DataFrame().Mean(diffname);
+      means.push_back(resultMean);
+      auto resultStdDev = DataFrame().StdDev(diffname);
+      sigmas.push_back(resultStdDev);
     }
-  }
 
- void NormaliseTruthVars(){
+    //Now(wait so can use lazy execution) we find the range and scale to that
+    //Produce normalised diff vars
+    for(UInt_t i=0;i<_truthVars.size();++i){
+      auto diffname=_truthVars[i]+"_m_"+_reconVars[i];
+      auto normname = diffname+"_NORM";
+      _normDiffVars.push_back(normname);
+      auto range = 2*5*(*sigmas[i]);//+- 5 sigma
+      auto off = *(means[i]);
+      DefineColumn(normname,Form("(%s-(%lf))/%lf",diffname.c_str(),off,range));
+
+      std::cout<<" AddDifferenceVars() using off "<<off<< " range "<<range <<" for "<<normname<<endl;
+      _dtruthVars[i].diffRange=range;
+      _dtruthVars[i].diffOffset=off;
+    }
+    
+  }
+  Double_t GetNormDiffRange(Int_t i) const {return  _dtruthVars[i].diffRange;}
+  Double_t GetNormDiffOff(Int_t i) const {return _dtruthVars[i].diffOffset;}
+  
+  void AddNormalisedTruthVars(){
    
    if(_dtruthVars.empty())
        Fatal("DataLoader::NormaliseTruthVars()","No detailed truth variables defined, need ranges for normalisation");
@@ -197,6 +247,7 @@ class DataLoader: public TObject{ //for TPython
   varnames_t _diffVars;
   varnames_t _randVars;
   varnames_t _normTruthVars;
+  varnames_t _normDiffVars;
   string _acceptVar;
   string _fastAccVar;
   string _fastAccWeight;
@@ -204,6 +255,9 @@ class DataLoader: public TObject{ //for TPython
   string _pdgVar;
   Long64_t _rangeMin=-1;
   Long64_t _rangeMax=-1;
+
+  std::vector<Double_t> _diffNormRange;
+  std::vector<Double_t> _diffNormOff;
   
   ClassDef(DataLoader,1);
  

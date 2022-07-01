@@ -39,7 +39,7 @@ if(do_gauss.GetName()=="TRUE"):
     #data_array[:,:nvars] => all rows and comumns 0 -> nvars-1 i.e. not 'flag'
     #gauss_array = gauss_transform.fit_transform(data_array[:,:nvars].copy())
     #replace data_array with new values
-    gauss_transform.fit_transform(data_array[:,:nvars])
+    #gauss_transform.fit_transform(data_array[:,:nvars])
     #Save Gaussian transformer.
     dump(gauss_transform,saveto+'gaussscaler.joblib')
     print('BDT.py : saved gaussian transform to ',saveto+'gaussscaler.joblib')
@@ -78,7 +78,7 @@ if(do_gauss.GetName()=="TRUE"):
     #data_array[:,:nvars] => all rows and comumns 0 -> nvars-1 i.e. not 'flag'
     #gauss_array = gauss_transform.fit_transform(data_array[:,:nvars].copy())
     #replace data_array with new values
-    gauss_transform.fit_transform(data_array[:,:nvars])
+   # gauss_transform.fit_transform(data_array[:,:nvars])
 
 #calculate acceptance per event
 probs = bdt.predict_proba(data_array[:,:nvars][data_array[:,nvars]==0])[:,1]#bdt.predict(data_array[:,:nvars][data_array[:,nvars]==0])

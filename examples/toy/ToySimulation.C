@@ -94,7 +94,7 @@ void Resolution_ThPhi(Double_t p,Double_t &th,Double_t &ph,Int_t icache){
 }
 
 
-void ToySimulation(Long64_t Nevents=1E6){
+void ToySimulation(Long64_t Nevents=1.6E6){
   Create_A_P();
   Create_Res_P(Nevents);
   
@@ -137,10 +137,14 @@ void ToySimulation(Long64_t Nevents=1E6){
     recPh=Ph;
     Resolution_ThPhi(P,recTh,recPh,i);
 
-    Th=Th*TMath::DegToRad();
-    Ph=Ph*TMath::DegToRad();
-    recTh=recTh*TMath::DegToRad();
-    recPh=recPh*TMath::DegToRad();
+    // Th=Th*TMath::DegToRad();
+    // Ph=Ph*TMath::DegToRad();
+    // recTh=recTh*TMath::DegToRad();
+    // recPh=recPh*TMath::DegToRad();
+    Th=Th;
+    Ph=Ph;
+    recTh=recTh;
+    recPh=recPh;
 
     accP=accP*accThPh;
     

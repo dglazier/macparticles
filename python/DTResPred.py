@@ -50,39 +50,19 @@ tru_data = dfdata.AsNumpy(tru_vars);
 tru_array = np.vstack([tru_data[xkey] for xkey in tru_data.keys()]).T
 print(tru_array.shape)
 
-#y_pred=copy.deepcopy(tru_array)
 y_pred=np.zeros_like(x_array)
 accepted = (acc_array==1)[0,:] #mask events flagged as accepted
 
-
-#y_pred=np.zeros((3,3))                    #better way to initialise numpy arrays?
-#y_pred=np.zeros((x_array.shape[0],3))
-#index=np.zeros(x_array.shape[0])
    
 for imodel in range(dtconf.n_regs):
     whichm = (whichModel==imodel) #mask events for this model
     acc_and_model = whichm*accepted
     x_here = x_array[acc_and_model]
     indices= np.where(acc_and_model)[0] #in data for this model
-#    print(indices)
     x_pred=addRandomInputs(x_here)
-#    print(x_pred)
-#    print(x_here)
     model = load(saveto+dtconf.model_name+ str(imodel) +'.joblib')
     y_pred[indices]=model.predict(x_pred)
 
-#    y_predTemp=model.predict(x_pred[whichModel==imodel])
-#    indexTemp=np.where(whichModel==imodel)[0]
-        #print(indexTemp.shape)
-        #print(y_predTemp.shape)
-        #print(indexTemp)
-    #if imodel==0:
-#    y_pred[indexTemp]=y_predTemp
-#    index=indexTemp
-    #else:
-    #    y_pred=np.vstack((y_pred,y_predTemp))
-    #    index=np.hstack((index,indexTemp))
-     
     
     print(y_pred)
     print(y_pred.shape)
@@ -94,10 +74,6 @@ for imodel in range(dtconf.n_regs):
     del acc_and_model
     print('DTResPred.py : done predictions  for model ',imodel)
 
-#print(index)
-#unshuf_order = np.zeros_like(index)
-#unshuf_order[index.astype(int)] = np.arange(x_array.shape[0])
-#y_pred=y_pred[unshuf_order]
 
 ############################################################################
 ###WRITE TO ROOT FILE
@@ -105,14 +81,21 @@ for imodel in range(dtconf.n_regs):
 #create dictionary to give branchnames to arrays
 y_dict = {}
 y_vars=df.GetReconVars()
-print(y_pred.shape)
 
+#unnormalise predictions going back to real variable units
+for vari in range (0,3):
+    off = df.GetNormDiffOff(vari)
+    scale =  df.GetNormDiffRange(vari)
+    print("offscale ", off,scale)
+    y_pred[:,vari]*=scale
+    y_pred[:,vari]+=off
+
+ 
 ##add the differences to the truth values
-y_pred = tru_array - y_pred
+y_pred =( tru_array - y_pred)
 for A, B in zip(y_vars, y_pred.T):
     y_dict[str(A)] = B
 
-print(y_dict)
 print(tru_data)
 
 pred_rdf = ROOT.RDF.MakeNumpyDataFrame(y_dict)
@@ -136,3 +119,4 @@ del x_vars
 del n_xvars
 del acc_data
 del acc_var
+del pred_rdf

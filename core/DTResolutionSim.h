@@ -18,6 +18,8 @@ class DTResolutionSim : public ResolutionSim {
     _pyDir = std::string(gSystem->Getenv("MACP"));
     if(_pyDir.empty()==false) _pyDir+="/python/";
   }
+
+  
   void Track(DataLoader& dl) override {
     gBenchmark->Start("resolution tracking");
     //cout<<"Going to add friend "<<OutputDir().String()<<endl;
@@ -25,14 +27,16 @@ class DTResolutionSim : public ResolutionSim {
       std::cerr<<"DTResolutionSimSim::Track need py macro"<<std::endl;
       exit(0);
     }
-    //use rdataframe to create required columns
-    dl.NormaliseTruthVars(); //onto range 0-1
-
     //Get saved configuration info from training
 
     auto file=std::unique_ptr<TFile>{ TFile::Open(_resDir.String()+"config.root") };
     auto conf = file->Get<TDTResConfig>("TDTResConfig");
-    
+    dl.TakeDetailedVarsInfo(conf->detailVars); //do not copy new names just ranges
+
+    //use rdataframe to create required columns
+    dl.AddNormalisedTruthVars(); //onto range 0-1
+
+     
     TPython::Bind( conf, "dtconf" );
     TPython::Bind( &dl, "df" );
     TPython::Bind( &_modelName, "model_name" );

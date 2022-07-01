@@ -6,7 +6,8 @@
 #include "ResolutionModel.h"
 
 class TDTResConfig: public TObject{
-
+  using datavars_t = std::vector<DataVariable > ;
+ 
   public:
 
   UInt_t n_rand_in=1;
@@ -14,6 +15,7 @@ class TDTResConfig: public TObject{
   UInt_t n_regs=10;
   std::string model_name= "dt";
   std::vector<std::string> x_vars; //default 1
+  datavars_t detailVars; //contains variable scaling info
   
   //Any TOject class used in py script needs ClassDef
   ClassDef(TDTResConfig,1);
@@ -35,27 +37,30 @@ class DecisionTreeResolModel : public ResolutionModel {
 
     
     //use rdataframe to create required columns
-    dl.NormaliseTruthVars(); //onto range 0-1
+    dl.AddNormalisedTruthVars(); //onto range 0-1
     dl.AddDifferenceVars();  //truth-rec
-
+    _config.detailVars=dl.GetDetailedVars(); //copy for use in simulation
      
     TPython::Bind( &_config, "dtconf" );
     TPython::Bind( &dl, "df" );
     TPython::Bind( ModelDir(), "save_dir" );
     TPython::Bind( ModelDir(), "out_dir" );
-    
+
+    //Do the training
     TPython::LoadMacro((_pyDir+ _trainPy).c_str() );
     
     gBenchmark->Stop("resolution");
     gBenchmark->Print("resolution");
     
     gBenchmark->Start("predictions");
-    
+
+    //Make predictions for the training data
     TPython::LoadMacro( (_pyDir+_predictionPy).c_str() );
     
     gBenchmark->Stop("predictions");
     gBenchmark->Print("predictions");
 
+    //Now done training save configuration for use in simulations.
     auto file=std::unique_ptr<TFile>{ TFile::Open(ModelDir()->String()+"config.root","recreate") };
     _config.Write();
 

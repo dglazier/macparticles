@@ -38,7 +38,7 @@ Bool_t ReconstructParticle(const Int_t i,const Double_t& trP,
 //Use ToySimulation to reconstruct each particle
 
 void Reaction(){
-  Int_t Nevents=1E6;
+  Int_t Nevents=5E6;
   Create_A_P();
   Create_Res_P(Nevents*3); //3 particles
   
