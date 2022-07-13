@@ -16,7 +16,7 @@
 
   //Give toplevel configuration directory
   ConfigureSimulation config;
-  config.Load("fast_simulation_norm/");
+  config.Load("fast_simulation/");
   //give pdg name for particle we are training
   config.AddPdg(pdg.Data());
   //Apply Gaussian transform to variables (recommended)
