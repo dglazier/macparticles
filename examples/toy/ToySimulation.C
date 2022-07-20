@@ -141,10 +141,10 @@ void ToySimulation(Long64_t Nevents=1.6E6){
     // Ph=Ph*TMath::DegToRad();
     // recTh=recTh*TMath::DegToRad();
     // recPh=recPh*TMath::DegToRad();
-    Th=Th;
-    Ph=Ph;
-    recTh=recTh;
-    recPh=recPh;
+    // Th=Th;
+    // Ph=Ph;
+    // recTh=recTh;
+    // recPh=recPh;
 
     accP=accP*accThPh;
     

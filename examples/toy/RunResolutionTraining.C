@@ -4,8 +4,8 @@
   DataLoader  dl("simtree", "toy_training.root");
   dl.Range(0,1.6E6); //gives approx 1M accepted
   dl.DetailedTruthVars({{"truP",0,10},
-			{"truTheta",0,TMath::Pi()},
-			{"truPhi",-TMath::Pi(),TMath::Pi()}});
+			{"truTheta",0,180},
+			{"truPhi",-180,180}});
   dl.SetReconVars({"recP","recTheta","recPhi"});
   dl.SetAcceptVar("accepted");
   

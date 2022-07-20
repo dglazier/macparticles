@@ -7,8 +7,8 @@
   //Give branch names of variables to generate acceptance against
   //ranges used for normalisation
   dl.DetailedTruthVars({{"truP",0,10},
-			{"truTheta",0,TMath::Pi()},
-			{"truPhi",-TMath::Pi(),TMath::Pi()}});
+			{"truTheta",0,180},
+			{"truPhi",-180,180}});
 
   //Give the name for acceptance flag branch in the event data
   //This should be 0 or 1 for detected or not
@@ -16,7 +16,7 @@
 
   //Give toplevel configuration directory
   ConfigureSimulation config;
-  config.Load("fast_simulation_norm/");
+  config.Load("fast_simulation/");
   //give pdg name for particle we are training
   config.AddPdg(pdg.Data());
   //Apply Gaussian transform to variables (recommended)

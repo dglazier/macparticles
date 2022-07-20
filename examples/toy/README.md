@@ -20,7 +20,7 @@ Here we assume all particles have the same acceptance
 
 and resolution
 
-      macparticles RunAcceptanceTraining.C pid=all
+      macparticles RunReconstructionTraining.C pid=all
 
 You may prefer to set pid=pi- etc and run the training 3 times for
 {"pi-","pi+","proton"}

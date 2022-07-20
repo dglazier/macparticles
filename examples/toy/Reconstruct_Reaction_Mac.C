@@ -1,7 +1,7 @@
 struct Hists{
-  TH2D Res_2pP={"Res_2pP","resolution proton P [GeV]",50,0,10,100,-1,1};
-  TH1D Res_pP={"Res_pP","resolution proton P [GeV]",100,-1,1};
-  TH1D Diff_pP={"Diff_pP","difference proton P [GeV]",100,-2,2};
+  TH2D Res_2pP={"Res_2pP","resolution proton P (GeV)",50,0,10,100,-1,1};
+  TH1D Res_pP={"Res_pP","resolution proton P (GeV)",100,-1,1};
+  TH1D Diff_pP={"Diff_pP","difference proton P (GeV)",100,-2,2};
   // TH1D Res_pP={"Res_pP","resolution proton P",100,-1,1};
   // TH1D Diff_pP={"Diff_pP","difference proton P",100,-1,1};
 
@@ -57,22 +57,22 @@ struct Hists{
   }
 };
 struct HistsPhys{
-  TH1D hM2pi={"M2pi","Invariant Mass #pi+#pi- [GeV/c^{2}]",110,0.3,3.6};
-  TH1D hW={"W","W [GeV/c^{2}]",110,3,4.8};
+  TH1D hM2pi={"M2pi","Invariant Mass #pi+#pi- (GeV)",110,0.3,3.6};
+  TH1D hW={"W","W (GeV)",110,3,4.8};
   TH1D hCosTh={"CosTh","cos(#theta_{GJ})",110,-1,1};
-  TH1D hPhi={"Phi","#phi_{GJ} [Degrees]",110,-180,180};
+  TH1D hPhi={"Phi","#phi_{GJ} (#circ)",110,-180,180};
   TH1D hCMCosTh={"CosTh","cos(#theta_{CM})",110,-1,1};
-  TH1D hCMPhi={"Phi","#phi_{CM} [Degrees]",110,-180,180};
+  TH1D hCMPhi={"Phi","#phi_{CM} (#circ)",110,-180,180};
 
-  TH1D hpP={"pP","proton Momentum [GeV]",100,0,10};
-  TH1D hpTheta={"pTheta","proton #theta [Degrees]",100,0,60};
-  TH1D hpPhi={"pPhi","proton #phi [Degrees]",100,-180,180};
-  TH1D hpimP={"pimP","#pi- Momentum [GeV]",100,0,10};
-  TH1D hpimTheta={"pimTheta","#pi- #theta [Degrees]",100,0,60};
-  TH1D hpimPhi={"pimPhi","#pi- #phi [Degrees]",100,-180,180};
-  TH1D hpipP={"pipP","#pi+ Momentum [GeV]",100,0,10};
-  TH1D hpipTheta={"pipTheta","#pi+ #theta [Degrees]",100,0,60};
-  TH1D hpipPhi={"pipPhi","#pi+ #phi [Degrees]",100,-180,180};
+  TH1D hpP={"pP","proton Momentum (GeV)",100,0,10};
+  TH1D hpTheta={"pTheta","proton #theta (#circ)",100,0,60};
+  TH1D hpPhi={"pPhi","proton #phi (#circ)",100,-180,180};
+  TH1D hpimP={"pimP","#pi- Momentum (GeV)",100,0,10};
+  TH1D hpimTheta={"pimTheta","#pi- #theta (#circ)",100,0,60};
+  TH1D hpimPhi={"pimPhi","#pi- #phi (#circ)",100,-180,180};
+  TH1D hpipP={"pipP","#pi+ Momentum (GeV)",100,0,10};
+  TH1D hpipTheta={"pipTheta","#pi+ #theta (#circ)",100,0,60};
+  TH1D hpipPhi={"pipPhi","#pi+ #phi (#circ)",100,-180,180};
 
   
   void Draw(){
@@ -123,48 +123,57 @@ struct HistsPhys{
     hpP.SetMinimum(0);
     hpP.SetLineColor(colour);
     hpP.GetXaxis()->SetTitle(hpP.GetTitle());
+    hpP.GetXaxis()->CenterTitle();
     hpP.DrawCopy(opt);
     can->cd(2);
     hpTheta.SetMinimum(0);
     hpTheta.SetLineColor(colour); 
     hpTheta.GetXaxis()->SetTitle(hpTheta.GetTitle());
+    hpTheta.GetXaxis()->CenterTitle();
     hpTheta.DrawCopy(opt);
     can->cd(3);
     hpPhi.SetMinimum(0);
     hpPhi.SetLineColor(colour); 
     hpPhi.GetXaxis()->SetTitle(hpPhi.GetTitle());
+    hpPhi.GetXaxis()->CenterTitle();
     hpPhi.DrawCopy(opt);
 
     can->cd(4);
     hpipP.SetMinimum(0);
     hpipP.SetLineColor(colour); 
     hpipP.GetXaxis()->SetTitle(hpipP.GetTitle());
+    hpipP.GetXaxis()->CenterTitle();
     hpipP.DrawCopy(opt);
     can->cd(5);
     hpipTheta.SetMinimum(0);
     hpipTheta.SetLineColor(colour); 
     hpipTheta.GetXaxis()->SetTitle(hpipTheta.GetTitle());
+    hpipTheta.GetXaxis()->CenterTitle();
     hpipTheta.DrawCopy(opt);
     can->cd(6);
     hpipPhi.SetMinimum(0);
     hpipPhi.SetLineColor(colour); 
     hpipPhi.GetXaxis()->SetTitle(hpipPhi.GetTitle());
+    hpipPhi.GetXaxis()->CenterTitle();
     hpipPhi.DrawCopy(opt);
 
     can->cd(7);
     hpimP.SetMinimum(0);
     hpimP.SetLineColor(colour); 
     hpimP.GetXaxis()->SetTitle(hpimP.GetTitle());
+    hpimP.GetXaxis()->CenterTitle();
     hpimP.DrawCopy(opt);
     can->cd(8);
     hpimTheta.SetMinimum(0);
     hpimTheta.SetLineColor(colour); 
     hpimTheta.GetXaxis()->SetTitle(hpimTheta.GetTitle());
+    hpimTheta.GetXaxis()->CenterTitle();
     hpimTheta.DrawCopy(opt);
     can->cd(9);
     hpimPhi.SetMinimum(0);
     hpimPhi.SetLineColor(colour); 
     hpimPhi.GetXaxis()->SetTitle(hpimPhi.GetTitle());
+    hpimPhi.GetXaxis()->CenterTitle();
     hpimPhi.DrawCopy(opt);
 
   }
@@ -174,36 +183,42 @@ struct HistsPhys{
     hW.SetMinimum(0);
     hW.GetXaxis()->SetTitle(hW.GetTitle());
     hW.SetLineColor(colour); 
+    hW.GetXaxis()->CenterTitle();
     hW.DrawCopy(opt);
 
     can->cd(4);
     hM2pi.SetMinimum(0);
     hM2pi.SetLineColor(colour);  
     hM2pi.GetXaxis()->SetTitle(hM2pi.GetTitle());
+    hM2pi.GetXaxis()->CenterTitle();
     hM2pi.DrawCopy(opt);
 
     can->cd(2);
     hCMCosTh.SetMinimum(0);
     hCMCosTh.SetLineColor(colour);  
     hCMCosTh.GetXaxis()->SetTitle(hCMCosTh.GetTitle());
+    hCMCosTh.GetXaxis()->CenterTitle();
     hCMCosTh.DrawCopy(opt);
     
     can->cd(5);
     hCMPhi.SetMinimum(0);
     hCMPhi.SetLineColor(colour);  
     hCMPhi.GetXaxis()->SetTitle(hCMPhi.GetTitle());
+    hCMPhi.GetXaxis()->CenterTitle();
     hCMPhi.DrawCopy(opt);
 
     can->cd(3);
     hCosTh.SetMinimum(0);
     hCosTh.SetLineColor(colour);  
     hCosTh.GetXaxis()->SetTitle(hCosTh.GetTitle());
+    hCosTh.GetXaxis()->CenterTitle();
     hCosTh.DrawCopy(opt);
 
     can->cd(6);
     hPhi.SetMinimum(0);
     hPhi.SetLineColor(colour);  
     hPhi.GetXaxis()->SetTitle(hPhi.GetTitle());
+    hPhi.GetXaxis()->CenterTitle();
     hPhi.DrawCopy(opt);
     
   }
@@ -274,22 +289,22 @@ struct HistsPhys{
 };
 
 struct HistsPhysRes{
-  TH1D hM2pi={"M2pi","Invariant Mass #pi+#pi- [GeV/c^{2}]",110,-1,1};
-  TH1D hW={"W","W [GeV/c^{2}]",110,-1,1};
+  TH1D hM2pi={"M2pi","Invariant Mass #pi+#pi- (GeV)",110,-1,1};
+  TH1D hW={"W","W (GeV)",110,-1,1};
   TH1D hCosTh={"CosTh","cos(#theta_{GJ})",110,-0.3,0.3};
-  TH1D hPhi={"Phi","#phi_{GJ} [Degrees]",110,-2,2};
+  TH1D hPhi={"Phi","#phi_{GJ} (#circ)",110,-2,2};
   TH1D hCMCosTh={"CosTh","cos(#theta_{CM})",110,-0.3,0.3};
-  TH1D hCMPhi={"Phi","#phi_{CM} [Degrees]",110,-2,2};
+  TH1D hCMPhi={"Phi","#phi_{CM} (#circ)",110,-2,2};
 
-  TH1D hpP={"pP","#Delta proton Momentum [GeV]",100,-2,2};
-  TH1D hpTheta={"pTheta","#Delta proton #theta [Degrees]",100,-3,3};
-  TH1D hpPhi={"pPhi","#Delta proton #phi [Degrees]",100,-15,15};
-  TH1D hpimP={"pimP","#Delta #pi- Momentum [GeV]",100,-2,2};
-  TH1D hpimTheta={"pimTheta","#Delta #pi- #theta [Degrees]",100,-3,3};
-  TH1D hpimPhi={"pimPhi","#Delta #pi- #phi [Degrees]",100,-15,15};
-  TH1D hpipP={"pipP","#Delta #pi+ Momentum [GeV]",100,-2,2};
-  TH1D hpipTheta={"pipTheta","#Delta #pi+ #theta [Degrees]",100,-3,3};
-  TH1D hpipPhi={"pipPhi","#Delta #pi+ #phi [Degrees]",100,-15,15};
+  TH1D hpP={"pP","proton Momentum Resolution (GeV)",100,-2,2};
+  TH1D hpTheta={"pTheta","proton #theta Resolution (#circ)",100,-3,3};
+  TH1D hpPhi={"pPhi","proton #phi Resolution (#circ)",100,-15,15};
+  TH1D hpimP={"pimP","#pi- Momentum Resolution (GeV)",100,-2,2};
+  TH1D hpimTheta={"pimTheta","#pi- #theta Resolution(#circ)",100,-3,3};
+  TH1D hpimPhi={"pimPhi","#pi- #phi Resolution (#circ)",100,-15,15};
+  TH1D hpipP={"pipP","#pi+ Momentum Resolution (GeV)",100,-2,2};
+  TH1D hpipTheta={"pipTheta","#pi+ #theta Resolution (#circ)",100,-3,3};
+  TH1D hpipPhi={"pipPhi","#pi+ #phi Resolution (#circ)",100,-15,15};
   void Draw(){
     auto can=new TCanvas;
     can->Divide(3,2);
@@ -315,36 +330,42 @@ struct HistsPhysRes{
     hW.SetMinimum(0);
     hW.SetLineColor(colour); 
     hW.GetXaxis()->SetTitle(hW.GetTitle());
+    hW.GetXaxis()->CenterTitle();
     hW.DrawCopy(opt);
 
     can->cd(4);
     hM2pi.SetMinimum(0);
     hM2pi.SetLineColor(colour);  
     hM2pi.GetXaxis()->SetTitle(hM2pi.GetTitle());
+    hM2pi.GetXaxis()->CenterTitle();
     hM2pi.DrawCopy(opt);
 
     can->cd(2);
     hCMCosTh.SetMinimum(0);
     hCMCosTh.SetLineColor(colour);  
     hCMCosTh.GetXaxis()->SetTitle(hCMCosTh.GetTitle());
+    hCMCosTh.GetXaxis()->CenterTitle();
     hCMCosTh.DrawCopy(opt);
     
     can->cd(5);
     hCMPhi.SetMinimum(0);
     hCMPhi.SetLineColor(colour);  
     hCMPhi.GetXaxis()->SetTitle(hCMPhi.GetTitle());
+    hCMPhi.GetXaxis()->CenterTitle();
     hCMPhi.DrawCopy(opt);
 
     can->cd(3);
     hCosTh.SetMinimum(0);
     hCosTh.SetLineColor(colour);  
     hCosTh.GetXaxis()->SetTitle(hCosTh.GetTitle());
+    hCosTh.GetXaxis()->CenterTitle();
     hCosTh.DrawCopy(opt);
 
     can->cd(6);
     hPhi.SetMinimum(0);
     hPhi.SetLineColor(colour);  
     hPhi.GetXaxis()->SetTitle(hPhi.GetTitle());
+    hPhi.GetXaxis()->CenterTitle();
     hPhi.DrawCopy(opt);
     
   }
@@ -353,48 +374,58 @@ void DrawPOnCanvas(TCanvas* can,TString opt,Int_t colour){
     hpP.SetMinimum(0);
     hpP.SetLineColor(colour); 
     hpP.GetXaxis()->SetTitle(hpP.GetTitle());
+    hpP.GetXaxis()->CenterTitle();
     hpP.DrawCopy(opt);
     can->cd(2);
     hpTheta.SetMinimum(0);
     hpTheta.SetLineColor(colour); 
     hpTheta.GetXaxis()->SetTitle(hpTheta.GetTitle());
+    hpTheta.GetXaxis()->CenterTitle();
     hpTheta.DrawCopy(opt);
     can->cd(3);
     hpPhi.SetMinimum(0);
     hpPhi.SetLineColor(colour); 
     hpPhi.GetXaxis()->SetTitle(hpPhi.GetTitle());
+    hpPhi.GetXaxis()->CenterTitle();
     hpPhi.DrawCopy(opt);
 
     can->cd(4);
     hpipP.SetMinimum(0);
     hpipP.SetLineColor(colour); 
     hpipP.GetXaxis()->SetTitle(hpipP.GetTitle());
+    hpipP.GetXaxis()->CenterTitle();
     hpipP.DrawCopy(opt);
     can->cd(5);
     hpipTheta.SetMinimum(0);
     hpipTheta.SetLineColor(colour); 
     hpipTheta.GetXaxis()->SetTitle(hpipTheta.GetTitle());
+    hpipTheta.GetXaxis()->CenterTitle();
     hpipTheta.DrawCopy(opt);
     can->cd(6);
     hpipPhi.SetMinimum(0);
     hpipPhi.SetLineColor(colour); 
     hpipPhi.GetXaxis()->SetTitle(hpipPhi.GetTitle());
+    hpipPhi.GetXaxis()->CenterTitle();
     hpipPhi.DrawCopy(opt);
 
     can->cd(7);
     hpimP.SetMinimum(0);
     hpimP.SetLineColor(colour); 
     hpimP.GetXaxis()->SetTitle(hpimP.GetTitle());
+    hpimP.GetXaxis()->CenterTitle();
+    hpimP.GetXaxis()->CenterTitle();
     hpimP.DrawCopy(opt);
     can->cd(8);
     hpimTheta.SetMinimum(0);
     hpimTheta.SetLineColor(colour); 
     hpimTheta.GetXaxis()->SetTitle(hpimTheta.GetTitle());
+    hpimTheta.GetXaxis()->CenterTitle();
     hpimTheta.DrawCopy(opt);
     can->cd(9);
     hpimPhi.SetMinimum(0);
     hpimPhi.SetLineColor(colour); 
     hpimPhi.GetXaxis()->SetTitle(hpimPhi.GetTitle());
+    hpimPhi.GetXaxis()->CenterTitle();
     hpimPhi.DrawCopy(opt);
 
   }
@@ -481,13 +512,15 @@ void CreateP4(TLorentzVector& v,Double_t p,Double_t theta,Double_t phi,Double_t 
 
 
 void Reconstruct_Reaction_Mac(){
-  gStyle->SetLabelSize(0.05);
-  gStyle->SetLabelSize(0.05,"Y");
-  gStyle->SetTitleXSize(0.06);
-  gStyle->SetTitleXOffset(0.9);
-  gStyle->SetTitleYSize(0.06);
+  gStyle->SetLabelSize(0.06);
+  gStyle->SetLabelSize(0.06,"Y");
+  gStyle->SetTitleXSize(0.08);
+  gStyle->SetTitleXOffset(0.87);
+  gStyle->SetTitleYSize(0.08);
   gStyle->SetTitleYOffset(0.8);
- // set margin sizes
+  gStyle->SetHistLineWidth(2);
+  gStyle->SetTitleAlign(0);
+  // set margin sizes
   
   gStyle->SetPadTopMargin(0.05);
   gStyle->SetPadRightMargin(0.05);
@@ -512,29 +545,29 @@ void Reconstruct_Reaction_Mac(){
   auto file= TFile::Open("toy_reaction.root");
   auto tree= file->Get<TTree>("tree");
   tree->SetEntries(5E6);
-  auto filePip= TFile::Open("results_norm3/pi+/predictions.root");
+  auto filePip= TFile::Open("results/pi+/predictions.root");
   auto treeFastPip= filePip->Get<TTree>("recon");
   treeFastPip->SetName("tree_fast");
   tree->AddFriend(treeFastPip);
-  auto fileAccPip= TFile::Open("results_norm3/pi+/simulation_acceptances.root");
+  auto fileAccPip= TFile::Open("results/pi+/simulation_acceptances.root");
   auto treeFastAccPip= fileAccPip->Get<TTree>("acceptance");
   treeFastAccPip->SetName("acc_pip");
   tree->AddFriend(treeFastAccPip);
   
-  auto filePim= TFile::Open("results_norm3/pi-/predictions.root");
+  auto filePim= TFile::Open("results/pi-/predictions.root");
   auto treeFastPim= filePim->Get<TTree>("recon");
   treeFastPim->SetName("tree_fast");
   tree->AddFriend(treeFastPim);
-  auto fileAccPim= TFile::Open("results_norm3/pi-/simulation_acceptances.root");
+  auto fileAccPim= TFile::Open("results/pi-/simulation_acceptances.root");
   auto treeFastAccPim= fileAccPim->Get<TTree>("acceptance");
   treeFastAccPim->SetName("acc_pim");
   tree->AddFriend(treeFastAccPim);
 
-  auto fileP= TFile::Open("results_norm3/proton/predictions.root");
+  auto fileP= TFile::Open("results/proton/predictions.root");
   auto treeFastP= fileP->Get<TTree>("recon");
   treeFastP->SetName("tree_fast");
   tree->AddFriend(treeFastP);
-  auto fileAccP= TFile::Open("results_norm3/proton/simulation_acceptances.root");
+  auto fileAccP= TFile::Open("results/proton/simulation_acceptances.root");
   auto treeFastAccP= fileAccP->Get<TTree>("acceptance");
   treeFastAccP->SetName("acc_p");
   tree->AddFriend(treeFastAccP);
