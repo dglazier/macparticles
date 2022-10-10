@@ -18,7 +18,7 @@
   gROOT->ProcessLine(".L ResolutionSim.h+");
   gROOT->ProcessLine(".L DTResolutionSim.h+");
 
-  gROOT->ProcessLine(".L SimulationFrameworks.h");
+  gROOT->ProcessLine(".L SimulationFrameworks.h+");
 }
 
 TString GetPID(){

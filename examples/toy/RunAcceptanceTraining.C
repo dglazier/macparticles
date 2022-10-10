@@ -1,7 +1,46 @@
+//macparticles RunAcceptanceTraining.C("pi+","training.root","fast_sim")'
+void RunAcceptanceTraining(string particle,string filename,string simdir){
 {
+
+  //get the data, which has been configured in the Configure.C script
+  auto dload  = TrainingInfo(particle,filename).TrainingData();
+
+
+  //Give toplevel simulation directory
+  ConfigureSimulation config;
+  config.Load(simdir);
+  //give pdg name for particle we are training
+  config.AddPid(particle);
+  //Apply Gaussian transform to variables (recommended)
+  config.acc_gaustrans = true;
+ 
+  
+  ///////////////////////////////
+  ///////////////////////////////
+  ///Here can configure the DNN
+  //train a keras DNN on the training data acceptance
+  KerasAcceptanceModel accKeras(config,ProcessType::Acceptance);
+  accKeras.SetMaxEpochs(100);
+  accKeras.SetLearnRate(1E-3);
+  accKeras.SetNetwork({512, 256,128, 64,32,16});
+  //accKeras.DontTrain();
+  accKeras.Train(dload.get());
+  
+ 
+
+  //And some plotting
+  AcceptancePlotter(*dload.get(),config).PlotTruthVars();
+  
+ }
+ }
+
+/*
+
+
+}
   auto pdg = GetPID();//give pid on command line e.g. pid=proton
   
-  DataLoader  dl("simtree", "toy_training.root");
+  DataWithAcceptanceVar  dl("simtree", "toy_training.root","accepted");
   dl.Range(0,1E6); //select number of events to train with < N in tree
 
   //Give branch names of variables to generate acceptance against
@@ -12,7 +51,7 @@
 
   //Give the name for acceptance flag branch in the event data
   //This should be 0 or 1 for detected or not
-  dl.SetAcceptVar("accepted");
+  //dl.SetAcceptVar("accepted");
 
   //Give toplevel configuration directory
   ConfigureSimulation config;
@@ -25,22 +64,22 @@
 
   //train a keras DNN on the training data acceptance
   KerasAcceptanceModel accKeras(config,ProcessType::Acceptance);
-  accKeras.SetMaxEpochs(100);
+  accKeras.SetMaxEpochs(2);
   accKeras.SetLearnRate(1E-3);
   accKeras.SetNetwork({1024,512,256,128, 64, 32});
   //accKeras.DontTrain();//If you just want to run reweighting part below
-  accKeras.Train(dl);
+  accKeras.Train(&dl);
   
   //Use a BDT to fine tune the DNN response (recommended but not required)
   BDTAcceptanceModel rewBdt(config,ProcessType::ReWeight);
-  rewBdt.SetNEstimators(100);
+  rewBdt.SetNEstimators(50);
   rewBdt.SetLearnRate(0.1);
   rewBdt.SetMinImpurityDecrease(1);
-  rewBdt.Train(dl);
-
+  rewBdt.Train(&dl);
+  
   //Save configuration for this step
   config.Save();
-
+ 
 
   //And some plotting
   gBenchmark->Start("plotting");
@@ -52,3 +91,4 @@
   gBenchmark->Print("plotting");
 
 }
+*/

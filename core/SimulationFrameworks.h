@@ -1,4 +1,7 @@
 #include "ConfigureSimulation.h"
+#include "DataLoader.h"
+#include "PyAcceptanceSim.h"
+#include "DTResolutionSim"
 
 void SimWithKerasAccDTRes(ConfigureSimulation& conf,DataLoader& data){
 
