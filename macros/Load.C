@@ -2,13 +2,18 @@
   gROOT->SetMacroPath(TString(gSystem->Getenv("MACP"))+"/core:"+gROOT->GetMacroPath());
   gROOT->SetMacroPath(TString(gSystem->Getenv("MACP"))+"/python:"+gROOT->GetMacroPath());
 
+  gROOT->ProcessLine(".L PythonBinding.h+");
   gROOT->ProcessLine(".L ConfigureSimulation.h+");
   gROOT->ProcessLine(".L DataLoader.h+");
+  gROOT->ProcessLine(".L DataWithAcceptanceVar.h+");
+  gROOT->ProcessLine(".L DataWithAccAndGenFiles.h+");
   gROOT->ProcessLine(".L AcceptanceModel.h+");
+  gROOT->ProcessLine(".L TBDTConfig.h+");
+  gROOT->ProcessLine(".L BDTAcceptanceModel.h+");
   gROOT->ProcessLine(".L PyAcceptanceModel.h+");
   gROOT->ProcessLine(".L KerasAcceptanceModel.h+");
-  gROOT->ProcessLine(".L BDTAcceptanceModel.h+");
   gROOT->ProcessLine(".L AcceptancePlotter.h+");
+  gROOT->ProcessLine(".L ResolutionPlotter.h+");
   
   gROOT->ProcessLine(".L ResolutionModel.h+");
   gROOT->ProcessLine(".L DecisionTreeResolModel.h+");
@@ -19,6 +24,8 @@
   gROOT->ProcessLine(".L DTResolutionSim.h+");
 
   gROOT->ProcessLine(".L SimulationFrameworks.h+");
+  gROOT->ProcessLine(".L TrainingInfo.h+");
+  gROOT->ProcessLine(".L DataInfo.h+");
 }
 
 TString GetPID(){
