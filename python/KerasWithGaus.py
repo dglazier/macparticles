@@ -8,30 +8,40 @@ from scipy.stats import chisquare
 from keras import callbacks
 from sklearn.preprocessing import QuantileTransformer
 from joblib import load, dump
+from platform import python_version
 
 print('Keras.py  AcceptanceTraining')
-
+print(tf.__version__)
+print(keras.__version__)
+print('python version ')
+print(python_version())
 ############################################################################
 ###PREPARE DATA
 ############################################################################
 
 dfdata=df.DataFrame()
-vars = df.GetTruthVars()
-nvars= vars.size()
-print('Keras.py : will train with variables ',vars)
+acc_vars = df.GetTruthVars()
+gen_vars = df.GetGenVars()
+nvars= acc_vars.size()
+print('Keras.py : will train with accepted truth variables ',acc_vars)
+print('Keras.py : will train with generated variables ',gen_vars)
 
 #use extra variable flag to ID generated(=0) and accepted(=1) datasets
-vars.push_back("flag")
+acc_vars.push_back("flag")
+gen_vars.push_back("flag")
 
 #create dataframes for generated and accepted datasets
-accdf = dfdata.Filter(df.GetAcceptCondition(1)).Define('flag','1').AsNumpy(vars);
-alldf= dfdata.Define('flag','0').AsNumpy(vars);
+#accdf = dfdata.Filter(df.GetAcceptCondition(1)).Define('flag','1').AsNumpy(vars);
+accdf = df.GetAcceptedFrame().Define('flag','1').AsNumpy(acc_vars);
+alldf= df.GetGeneratedFrame().Define('flag','0').AsNumpy(gen_vars);
 
 #extract numpy arrays from dictionary and combine accepted and generated into 1 dataset
 acc_array = np.vstack([accdf[xkey] for xkey in accdf.keys()])
 all_array = np.vstack([alldf[xkey] for xkey in alldf.keys()])
 data_array = np.hstack((acc_array,all_array)).T
 
+print('Keras.py : accepted events ',acc_array.shape)
+print('Keras.py : generated events ',all_array.shape)
 ##########################################################################
 ###GAUSSIAN TRANSFORM TRAINING VARIABLES
 ##########################################################################
@@ -99,11 +109,16 @@ dnn.save(saveto + dnn_name )
 ##########################################################################
 ###CALCULATE NEW ACCEPTANCES
 ##########################################################################
+#get any scale factor
+#scale = df.ScaleFactor()
+#print('going to scale weights by ',scale)
 
 #calculate acceptance per event
 probs = dnn.predict(data_array[:,:nvars][data_array[:,nvars]==0])
+#weights_acc = scale*probs/(1-probs)
 weights_acc = probs/(1-probs)
 
+print(weights_acc)
 
 def rejection_sample(weights, nev):
     rands = np.random.uniform(0, 1, nev)

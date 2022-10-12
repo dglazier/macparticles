@@ -7,7 +7,7 @@ from joblib import load, dump
 ############################################################################
 ###PREPARE DATA
 ############################################################################
-dfdata=df.DataFrame()
+#dfdata=df.DataFrame()
 x_vars =df.GetNormTruthVars()
 n_xvars= x_vars.size()
 y_vars=df.GetNormDiffVars()
@@ -17,10 +17,11 @@ print('DTRes.py : will train with x variables ',x_vars)
 print('DTRes.py : will train with y variables ',y_vars)
 
 #only want accepted events in arrays
-x_data = dfdata.Filter(df.GetAcceptCondition(1)).AsNumpy(x_vars);
+x_data = df.GetPredictionsFrame().AsNumpy(x_vars);
 x_array = np.vstack([x_data[xkey] for xkey in x_data.keys()]).T
 
-y_data = dfdata.Filter(df.GetAcceptCondition(1)).AsNumpy(y_vars);
+#y_data = dfdata.Filter(df.GetAcceptCondition(1)).AsNumpy(y_vars);
+y_data = df.GetPredictionsFrame().AsNumpy(y_vars);
 y_array = np.vstack([y_data[ykey] for ykey in y_data.keys()]).T
 
 ############################################################################
@@ -42,8 +43,6 @@ saveto = save_dir.GetName() + '/'
 for i in range(dtconf.n_regs):
     model= DecisionTreeRegressor() 
     x_fit= addRandomInputs(x_array)
-    print('shape of input ',x_fit.shape)
-    print('shape of output ',y_array.shape)
     model.fit(x_fit,y_array)
     dump(model,saveto+dtconf.model_name+ str(i) +'.joblib')
   
@@ -56,6 +55,8 @@ del x_array
 del y_array
 del x_data
 del y_data
-
-
-    
+del saveto
+del x_vars
+del n_xvars
+del y_vars
+del n_yvars

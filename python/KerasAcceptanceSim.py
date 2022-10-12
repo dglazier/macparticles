@@ -15,13 +15,16 @@ from sklearn.preprocessing import QuantileTransformer
 ############################################################################
 ###PREPARE DATA
 ############################################################################
-dfdata=df.DataFrame()
-vars = df.GetTruthVars()
+#dfdata=df.DataFrame()
+dfdata= df.GetGeneratedFrame();
+
+vars = df.GetGenVars()
 nvars= vars.size()
 print('KerasAcceptanceSim.py : will simulate with variables ',vars)
 simdf=dfdata.AsNumpy(vars);
 sim_data = np.vstack([simdf[xkey] for xkey in simdf.keys()]).T
 print(sim_data)
+print('KerasAcceptanceSim.py : number of  events to process ',sim_data.shape)
 
 ############################################################################
 ###PREPARE TRAINED MODEL
@@ -47,6 +50,8 @@ if(do_gauss.GetName()=="TRUE"):
     gauss_transform = load(accdir+'gaussscaler.joblib')
     sim_data_gaus=gauss_transform.transform(sim_data[:,:nvars].copy())
     probs = acc_model.predict(sim_data_gaus)
+    #print('gaus ',sim_data_gaus)
+    #print('probs ',probs)
     del gauss_transform
     del sim_data_gaus
 else:
@@ -54,25 +59,27 @@ else:
     ###GET DETECTION PROBABILIES FROM MODEL
     ##########################################################################
     probs = acc_model.predict(sim_data)
-    
-weights = probs/(1-probs)
 
+   
+weights = probs/(1-probs)
+print('KerasAcceptanceSim.py : initial weights ',weights)
 ##########################################################################
 ###USE BDT REWEIGHTER IF REQUESTED
 ##########################################################################
 if(do_bdt_reweight.GetName()=="TRUE"):
     extra_probs = bdt.predict_proba(sim_data)[:,1]
     extra_weights = extra_probs/(1-extra_probs)
-    print(weights)
-    print(extra_weights)
+    #print(weights)
+    #print(extra_weights)
     weights = weights.T*(extra_weights)
     weights = weights.T
-    print(weights)
+    #print(weights)
     
     del extra_probs
     del extra_weights
     del bdt
 
+print('KerasAcceptanceSim.py : reweighted ',weights)
    
 ##########################################################################
 ###PRODUCE ACCEPTANCE MASK
@@ -83,8 +90,8 @@ def rejection_sample(weights, nev):
     return mask.astype(int)
 
 accepted_mask  = rejection_sample(weights[:,0], sim_data.shape[0])
-
-acc_rdf = ROOT.RDF.MakeNumpyDataFrame({"accept":accepted_mask})#,"fast_weight":weights_acc})
+print('KerasAcceptanceSim.py : save to  'str(out_dir)+"simulation_acceptances.root")
+acc_rdf = ROOT.RDF.MakeNumpyDataFrame({str(part_acc) :accepted_mask})#,"fast_weight":weights_acc})
 acc_rdf.Snapshot("acceptance", str(out_dir)+"simulation_acceptances.root")
 
 del dfdata

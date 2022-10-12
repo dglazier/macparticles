@@ -27,7 +27,7 @@ struct DataVariable{
   Double_t max=0.; //user define max
   Double_t diffOffset=0.; //DataLoader calculated offset in difference 
   Double_t diffRange=1.;  //DataLoader calculated difference range
-  Double_t extraScaling=1.;
+  // Double_t extraScaling=1.;
 
 };
 class DataFromTreeBranch{
@@ -102,7 +102,7 @@ class DataLoader: public TObject{ //for TPython
 
   virtual ROOT::RDF::RNode  GetAcceptedFrame(){
     //flagged accepted in input data
-    std::cout<<"DataLoader::GetAcceptedFrame() on "<<GetAcceptVar()<<std::endl;
+    std::cout<<"DataLoader::GetAcceptedFrame() cut on "<<GetAcceptVar()<<std::endl;
     return DataFrame().Filter(Form("%s==1",GetAcceptVar().c_str()));
   }
   virtual ROOT::RDF::RNode  GetGeneratedFrame(){
@@ -266,7 +266,7 @@ class DataLoader: public TObject{ //for TPython
   }
   Double_t GetNormDiffRange(Int_t i) const {return  _dtruthVars[i].diffRange;}
   Double_t GetNormDiffOff(Int_t i) const {return _dtruthVars[i].diffOffset;}
-  void SetExtraResolutionScaling(Int_t i,Double_t val){_dtruthVars[i].extraScaling=val;}
+  //void SetExtraResolutionScaling(Int_t i,Double_t val){_dtruthVars[i].extraScaling=val;}
 
  
   void AddNormalisedTruthVars(){
