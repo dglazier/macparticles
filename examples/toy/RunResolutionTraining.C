@@ -1,13 +1,37 @@
+void RunResolutionTraining(string particle,string filename,string simdir){
+ 
+  auto dload  = TrainingInfo(particle,filename).TrainingData();
+
+  
+  //Give toplevel configuration directory
+  ConfigureSimulation config;
+  config.Load(simdir);
+  //give pdg name for particle we are training
+  config.UsePid(particle);
+
+  ///////////////////////////////	
+  ///////////////////////////////
+  ///Here can configure the regressors
+  DecisionTreeResolModel res(config);
+  res.SetNRegressors(10);
+  res.SetNRandInputs(5);
+  res.SetApplyExtraScaling();
+  res.Train(dload.get());
+
+  ResolutionPlotter(*dload.get(),config).PlotTraining();
+
+ }
+/*
 {
   auto pdg = GetPID(); //give pid on command line e.g. pid=proton
  
-  DataLoader  dl("simtree", "toy_training.root");
+  DataWithAcceptanceVar  dl("simtree", "toy_training.root","accepted");
   dl.Range(0,1.6E6); //gives approx 1M accepted
   dl.DetailedTruthVars({{"truP",0,10},
 			{"truTheta",0,180},
 			{"truPhi",-180,180}});
   dl.SetReconVars({"recP","recTheta","recPhi"});
-  dl.SetAcceptVar("accepted");
+  //dl.SetAcceptVar();
   
   ConfigureSimulation config;
   config.Load("fast_simulation/");
@@ -67,3 +91,4 @@
 
  
  }
+*/

@@ -17,25 +17,28 @@ class PyAcceptanceSim : public AcceptanceSim {
       if(con.use_reweights)SetReweight(con.ReWeightDir()+con.reweight_model);
       SetModelName(con.acc_model);
       _accDir = con.AcceptanceDir().c_str();
-      
+      _partAcc = con.AcceptanceName().c_str();
      _pyDir = std::string(gSystem->Getenv("MACP"));
      if(_pyDir.empty()==false) _pyDir+="/python/";
    }
 
-  void Track(DataLoader& df) override {
+  void Track(DataLoader* df) override {
     if(OutputDir().String().Length()==0){
       std::cerr<<"PyAcceptanceSim::Track need an output directory"<<std::endl;
       exit(0);
     }
-   
-    TPython::Bind( &df, "df" );
+    df->InitTrainingData();
+
+    TPython::Bind( df, "df" );
     TPython::Bind( &_modelName, "model_name" );
     TPython::Bind( &_accDir, "acc_dir" );
     TPython::Bind( &OutputDir(), "out_dir" );
     TPython::Bind( &_do_gauss, "do_gauss" );
     TPython::Bind( &_do_bdt_reweight, "do_bdt_reweight" );
     TPython::Bind( &_reweight_name, "reweight_name" );
-    
+    TPython::Bind( &_partAcc, "part_acc" );
+    std::cout<<"CHECK partACC "<<_partAcc.GetName()<<std::endl;
+
     gBenchmark->Start("tracking");
     TPython::LoadMacro( (_pyDir+Macro()).data() );
     gBenchmark->Stop("tracking");
@@ -59,6 +62,7 @@ private:
   TObjString _reweight_name="";
   TObjString _modelName = "";
   TObjString _accDir = "";
+  TObjString _partAcc = "";
   std::string _macro = "KerasAcceptanceSim.py";
   std::string _pyDir;
 

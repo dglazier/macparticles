@@ -14,18 +14,21 @@ class AcceptanceSim {
     SetOutputDir(con.SimulationDir());
   }
 
-  virtual void Track(DataLoader& df)=0;
+  virtual void Track(DataLoader* df)=0;
 
   void SetOutputDir(const string& mac){
-    _outDir=(mac+'/').c_str();
+    _outDir=((mac+'/')).c_str();
     gSystem->Exec(Form("mkdir -p %s",_outDir.GetName() ));
   }
 
   TObjString& OutputDir(){return _outDir;}
-  
+
+  const ConfigureSimulation& Organise(){return _organise;}
+
 private :
   
   ConfigureSimulation _organise;
   TObjString _outDir;
+  Double_t _scaleFactor;
 
 };

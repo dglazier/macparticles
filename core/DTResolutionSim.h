@@ -20,25 +20,29 @@ class DTResolutionSim : public ResolutionSim {
   }
 
   
-  void Track(DataLoader& dl) override {
+  void Track(DataLoader* dl) override {
     gBenchmark->Start("resolution tracking");
     //cout<<"Going to add friend "<<OutputDir().String()<<endl;
     if(_macro.empty()){
       std::cerr<<"DTResolutionSimSim::Track need py macro"<<std::endl;
       exit(0);
     }
+
+    dl->InitTrainingData();
+
+
     //Get saved configuration info from training
 
     auto file=std::unique_ptr<TFile>{ TFile::Open(_resDir.String()+"config.root") };
     auto conf = file->Get<TDTResConfig>("TDTResConfig");
-    dl.TakeDetailedVarsInfo(conf->detailVars); //do not copy new names just ranges
+    dl->TakeDetailedVarsInfo(conf->detailVars); //do not copy new names just ranges
 
     //use rdataframe to create required columns
-    dl.AddNormalisedTruthVars(); //onto range 0-1
+    dl->AddNormalisedTruthVars(); //onto range 0-1
 
      
     TPython::Bind( conf, "dtconf" );
-    TPython::Bind( &dl, "df" );
+    TPython::Bind( dl, "df" );
     TPython::Bind( &_modelName, "model_name" );
     TPython::Bind( &_resDir, "save_dir" );
     TPython::Bind( &OutputDir(), "out_dir" );
@@ -48,7 +52,7 @@ class DTResolutionSim : public ResolutionSim {
     gBenchmark->Print("resolution tracking");
 
     //Add as friend so can make plots in this session
-    dl.AddFriend("recon",(OutputDir().String()+"predictions.root").Data());
+    dl->AddFriend("recon",(OutputDir().String()+"predictions.root").Data());
   }
 
   const std::string& Macro(){return _macro;}

@@ -1,0 +1,141 @@
+#pragma once
+
+#include "DataLoader.h"
+
+class DataWithAccAndGenFiles: public DataLoader{
+
+ public:
+
+  //case one file each for generated and accepted
+ DataWithAccAndGenFiles(std::string_view treename,std::string_view accname,std::string_view genname,Long64_t NGenEvents=-1):DataLoader(treename,accname), _genChain{treename.data()},_genDf{new ROOT::RDataFrame(_genChain)}{
+
+
+    _genChain.Add(genname.data());
+    SetScaleFactor(((Double_t)NGenEvents)/_genChain.GetEntries()); //gen_scaleFactor;
+    if(NGenEvents>-1) _genChain.SetEntries(NGenEvents);
+    _genrangeMax=NGenEvents;
+   
+  };
+ 
+  ROOT::RDF::RNode  GetAcceptedFrame() override{
+    return DataFrame();
+  }
+  ROOT::RDF::RNode  GetGeneratedFrame() override{
+    return (*_genDf.get());
+  }
+  ROOT::RDF::RNode  GetPredictionsFrame() override{
+    //add dummy accpeted column to tree for masking (so it will not mask any)
+    if(_addAcceptedCol==kFALSE){
+      std::string accName= "macpAccepted";
+      SetAcceptVar(accName);
+      DefineColumn(accName,"1");
+      _addAcceptedCol=kTRUE;
+    }
+    //flagged accepted in input data
+    return GetAcceptedFrame();
+  }
+  void SetGenFractionToProcess(Double_t frac){
+    _processGenFraction= frac;
+  }
+
+
+ void ResetWithChain() override{
+    //now we have a friend we need to recreate the dataframe and node
+   cout<<"DataWithAccAndGenFiles::ResetWithChain()"<<endl;
+   if(_genrangeMax>-1)_genChain.SetEntries(_genrangeMax);
+   //  _genChain.Print();
+   _genDf.reset(new ROOT::RDataFrame(_genChain));
+
+    //_currNode=*(_df.get());
+    //Make sure to pass one any configurations
+    //if(_rangeMin>=0) Range(_rangeMin,_rangeMax);
+    //for(auto& opt:_filters)
+   // Filter(opt);
+  }
+   void SetFastAccWeights(const string& treeName,const string& fileName,const string& accName="fast_accept",const string& weightName="fast_weight") override{
+    //For fine tuning, first run 1 classifier then use its weights here
+    //Results of this training can reweight prior to get more accurate results
+    _priorAccWeights.push_back(std::unique_ptr<TChain>{new TChain{treeName.c_str()} });
+    
+    _priorAccWeights.back()->Add(fileName.c_str());
+    _genChain.AddFriend(_priorAccWeights.back().get());
+    SetFastAcceptVar(treeName+"."+accName); //mask
+    SetFastAcceptWgt(treeName+"."+weightName); //probability
+ 
+    ResetWithChain();
+  }
+    void SetFastReWeights(const string& treeName,const string& fileName,const string& weightName="fast_weight") override{
+      SetFastReWeight(treeName+"."+weightName);
+      _priorAccWeights.push_back(std::unique_ptr<TChain>{new TChain{treeName.c_str()} });   
+      _priorAccWeights.back()->Add(fileName.c_str());
+
+      _genChain.AddFriend(_priorAccWeights.back().get());
+       
+      ResetWithChain();
+    }
+
+    Double_t ScaleFactor()const override{return DataLoader::ScaleFactor()*_genScaleFactor;}
+    void SetScaleFactor(Double_t fact) override{
+      cout<<"DataWithAccAndGenFiles setscale factor "<<fact<<endl;
+      _genScaleFactor=fact;}
+
+
+ public:
+    void InitTrainingData() override{
+      DataLoader::InitTrainingData();
+    _nEntriesToProcess=(*(_genDF.Count()))*_processFraction;
+    SetScaleFactor(1./_processFraction);
+    //then set the number to process
+    Range(0,_nEntriesToProcess);
+    std::cout<<"DataLoader::Init() will process "<<_nEntriesToProcess<<" event, from  "<<Chain().GetEntries()<<" in original tree"<<std::endl;
+
+    }
+
+    /* void Range(Long64_t min, Long64_t max) override{ */
+    /*   auto fact = DataLoader::ScaleFactor(); */
+    /*   if(fact==1){ */
+    /* 	cout<<"DataWithAccAndGen::Range set scale factor to "<<fact*Chain().GetEntries()/(max-min)<<" from "<<fact<<endl; */
+    /* 	DataLoader::SetScaleFactor(fact*Chain().GetEntries()/(max-min)); */
+    /*   } */
+    /*   DataLoader::Range(min,max); */
+    /* } */
+
+ private:
+
+  /* void AddMacpTypeToFileData(std::string_view treename,std::string_view filename,MACP::Type myType){ */
+  /*   auto treefile=unique_ptr<TFile>{TFile::Open(filename.data(),"update")}; */
+  /*   auto tree =treefile->Get<TTree>(treename.data()); */
+
+  /*   Int_t type=static_cast<Int_t>(myType) ; */
+
+  /*   if(tree->GetBranch("macpType")==nullptr){ */
+  /*     TBranch* branch=tree->Branch("macpType",&type,"macpType/I"); */
+      
+  /*   //	  Long64_t id=(Long64_t)UID; */
+  
+  /*     for(Long64_t i=0;i<tree->GetEntries();i++){ */
+  /* 	branch->Fill(); */
+  /*     }	 */
+  /*     tree->Print(); */
+  /*     tree->Write(); */
+  /*     Info("AddMacpTypeToFileData","added branch macpType to file %s",filename.data() ); */
+  /*   } */
+  /*   else{ */
+  /*     Info("AddMacpTypeToFileData","branch macpType exists in file %s",filename.data() ); */
+
+  /*   } */
+ 
+  /* } */
+
+  TChain _genChain;
+  std::unique_ptr<ROOT::RDataFrame> _genDf;
+  Bool_t _addAcceptedCol=kFALSE;
+  Long64_t _genrangeMin=-1;
+  Long64_t _genrangeMax=-1;
+  Double_t _genScaleFactor=1.0;
+ public:
+
+  ClassDefOverride(DataWithAccAndGenFiles,1);
+
+};
+

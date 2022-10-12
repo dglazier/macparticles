@@ -4,6 +4,7 @@
 #include <TPython.h>
 #include <TBenchmark.h>
 #include "AcceptanceModel.h"
+#include "PythonBinding.h"
 
 using std::string;
 
@@ -20,13 +21,18 @@ class PyAcceptanceModel : public AcceptanceModel {
     if(_pyDir.empty()==false) _pyDir+="/python/";
   }
 
-  void Train(DataLoader& dl) override {
+  void Train(DataLoader* dl) override {
+    //if reweighting apply acceptance weights 
+    /* if(IsReWeight()==kTRUE)  */
+    /*   SetFastAcceptanceWeights(dl); */
+
+    dl->InitTrainingData();
+    TPython::Bind( dl, "df" );
+    TPython::Bind( ModelDir(), "save_dir" );
+    TPython::Bind( &_do_gauss, "do_gauss" );
     
     gBenchmark->Start(ModelName().c_str());
 
-    TPython::Bind( &dl, "df" );
-    TPython::Bind( ModelDir(), "save_dir" );
-    TPython::Bind( &_do_gauss, "do_gauss" );
     if(_dontTrain==false)TPython::LoadMacro( (_pyDir + Macro()).data() );
     
     gBenchmark->Stop(ModelName().c_str());
@@ -34,20 +40,22 @@ class PyAcceptanceModel : public AcceptanceModel {
 
     //Give weights to the data
     //Note "training_acceptances" is fixed in py script SnapShot
-    if(IsAcceptance()==kTRUE)
-      dl.SetFastAccWeights(ModelName(),(ModelDir()->String()+"training_acceptances.root").Data());
-    else
-      dl.SetFastReWeights(ModelName(),(ModelDir()->String()+"training_acceptances.root").Data());
-  
+    if(IsAcceptance()==kTRUE) SetFastAcceptanceWeights(dl);
+    else  SetFastReWeights(dl);
+
+    Finish(dl);
   }
   virtual const string& Macro()  = 0;
 
+ 
   void SetGaussianTransform(){_do_gauss="TRUE";}
   void DontTrain(){_dontTrain=true;}
+  void SetSecondPass(){ _firstPass=kFALSE;}
 private:
   
   TObjString _do_gauss="FALSE";
   std::string _pyDir;
-  bool _dontTrain=false;
-  
+  Bool_t _dontTrain=kFALSE;
+  Bool_t _firstPass=kTRUE;
+
 };

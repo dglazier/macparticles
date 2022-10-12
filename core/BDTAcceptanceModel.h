@@ -2,35 +2,25 @@
 
 #include <TObject.h>
 #include "PyAcceptanceModel.h"
+#include "TBDTConfig.h"
 
-class TBDTConfig: public TObject{
-
-  public:
-  Int_t n_estimators = 200;
-  Int_t max_depth=10;
-  Double_t learning_rate=0.1;
-  Double_t min_impurity_decrease=1;
-  Int_t verbose=1;
-  string bdt_name= "BDT";
-  
-  //Any TOject class used in py script needs ClassDef
-  ClassDef(TBDTConfig,1);
-};
 
 class BDTAcceptanceModel : public PyAcceptanceModel {
 
  public :
   BDTAcceptanceModel(ConfigureSimulation& con, ProcessType type):PyAcceptanceModel{con,type}{
     if( type == ProcessType::ReWeight ){
-      _config.bdt_name = con.reweight_model;
+      // _config.bdt_name = con.reweight_model;
     }
     else if( type == ProcessType::Acceptance ){
-      _config.bdt_name = con.acc_model;
+      //  _config.bdt_name = con.acc_model;
     }
   }
 
-  void Train(DataLoader& df){
-    TPython::Bind( &_config, "bdtconf" );
+  void Train(DataLoader* df){
+  
+    //TPython::Bind
+    PythonBinding::Instance().PythonBindOnce( &_config, "bdtconf" );
     PyAcceptanceModel::Train(df);
   }
   
@@ -46,9 +36,9 @@ class BDTAcceptanceModel : public PyAcceptanceModel {
   const string& Macro() final {return _macro;}
   
  private :
-  
-  string _macro = "BDT.py";
-  TBDTConfig _config;
+  TBDTConfig _config={};
 
+  string _macro = "BDT.py";
+ 
 
 };

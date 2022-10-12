@@ -14,26 +14,35 @@ Generates file : toy_reaction.root
 
 ## To train for a particular particle,
 
-Here we assume all particles have the same acceptance
+First we run an overall configure script for the training data
 
-      macparticles RunAcceptanceTraining.C pid=all
+      macparticles Configure.C
 
-and resolution
+Now we can run acceptance training for each particle
 
-      macparticles RunReconstructionTraining.C pid=all
+      macparticles 'RunAcceptanceTraining.C( "pi+","training.root","fast_sim" )'
 
-You may prefer to set pid=pi- etc and run the training 3 times for
-{"pi-","pi+","proton"}
+More accurate acceptances can be acheived through reweighting with a BDT
+
+      macparticles 'RunReweightTraining.C( "pi+","training.root","fast_sim" )'
+
+and we can then train resolutions
+
+      macparticles 'RunResolutionTraining.C( "pi+","training.root","fast_sim" )'
+
+
+If you are happy with the results you can go on and train the pi- and proton.
+If you think the acceptances are not so great you can try tuning the DNN
+via the RunAcceptanceTraining.C script. Similar for the other two.
 
 ## To run simulation of reactions gp-> pi+ pi- p'
 
 Now we have to run for each particle, which have different branches in the
 reaction tree
 
-	 macparticles RunSimulation.C pid=pi+
-	 macparticles RunSimulation.C pid=pi-
-	 macparticles RunSimulation.C pid=proton
-
+	 macparticles 'RunSimulation.C( "pip","pi+","fast_sim/","results10" )'
+	 macparticles 'RunSimulation.C( "pim","pi-","fast_sim/","results10" )'
+	 macparticles 'RunSimulation.C( "p","proton","fast_sim/","results10" )'
 
 ## To plot the results
 

@@ -14,7 +14,7 @@ class ResolutionSim {
     SetOutputDir(con.SimulationDir());
   }
 
-  virtual void Track(DataLoader& df)=0;
+  virtual void Track(DataLoader* df)=0;
   
   void SetModelDir(const string& dir){
     _modelSave=dir.c_str();
@@ -24,8 +24,8 @@ class ResolutionSim {
   const ConfigureSimulation& Organise(){return _organise;}
 
   void SetOutputDir(const string& mac){
-    _outDir=(mac+'/').c_str();
-    gSystem->Exec(Form("mkdir -p %s",_outDir.GetName() ));
+    _outDir=((mac+'/')).c_str();
+    gSystem->Exec(Form("mkdir -p %s",_outDir.GetName()));
   }
   TObjString& OutputDir(){return _outDir;}
   

@@ -15,7 +15,7 @@ class ResolutionModel {
 
   ResolutionModel()=default;
   
-  virtual void Train(DataLoader& df)=0;
+  virtual void Train(DataLoader* dl)=0;
   
   void SetModelDir(const string& dir){
     _modelSave=dir.c_str();

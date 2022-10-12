@@ -545,29 +545,29 @@ void Reconstruct_Reaction_Mac(){
   auto file= TFile::Open("toy_reaction.root");
   auto tree= file->Get<TTree>("tree");
   tree->SetEntries(5E6);
-  auto filePip= TFile::Open("results/pi+/predictions.root");
+  auto filePip= TFile::Open("results10/pip/predictions.root");
   auto treeFastPip= filePip->Get<TTree>("recon");
   treeFastPip->SetName("tree_fast");
   tree->AddFriend(treeFastPip);
-  auto fileAccPip= TFile::Open("results/pi+/simulation_acceptances.root");
+  auto fileAccPip= TFile::Open("results10/pip/simulation_acceptances.root");
   auto treeFastAccPip= fileAccPip->Get<TTree>("acceptance");
   treeFastAccPip->SetName("acc_pip");
   tree->AddFriend(treeFastAccPip);
   
-  auto filePim= TFile::Open("results/pi-/predictions.root");
+  auto filePim= TFile::Open("results10/pim/predictions.root");
   auto treeFastPim= filePim->Get<TTree>("recon");
   treeFastPim->SetName("tree_fast");
   tree->AddFriend(treeFastPim);
-  auto fileAccPim= TFile::Open("results/pi-/simulation_acceptances.root");
+  auto fileAccPim= TFile::Open("results10/pim/simulation_acceptances.root");
   auto treeFastAccPim= fileAccPim->Get<TTree>("acceptance");
   treeFastAccPim->SetName("acc_pim");
   tree->AddFriend(treeFastAccPim);
 
-  auto fileP= TFile::Open("results/proton/predictions.root");
+  auto fileP= TFile::Open("results10/p/predictions.root");
   auto treeFastP= fileP->Get<TTree>("recon");
   treeFastP->SetName("tree_fast");
   tree->AddFriend(treeFastP);
-  auto fileAccP= TFile::Open("results/proton/simulation_acceptances.root");
+  auto fileAccP= TFile::Open("results10/p/simulation_acceptances.root");
   auto treeFastAccP= fileAccP->Get<TTree>("acceptance");
   treeFastAccP->SetName("acc_p");
   tree->AddFriend(treeFastAccP);
@@ -610,9 +610,9 @@ void Reconstruct_Reaction_Mac(){
    TTreeReaderValue<Bool_t> accepted_pim = {fReader, "accepted_pim"};
 
 
-   TTreeReaderValue<Long64_t> fast_acc_p = {fReader, "acc_p.accept"};
-   TTreeReaderValue<Long64_t> fast_acc_pip = {fReader, "acc_pip.accept"};
-   TTreeReaderValue<Long64_t> fast_acc_pim = {fReader, "acc_pim.accept"};
+   TTreeReaderValue<Long64_t> fast_acc_p = {fReader, "acc_p.accept_p"};
+   TTreeReaderValue<Long64_t> fast_acc_pip = {fReader, "acc_pip.accept_pip"};
+   TTreeReaderValue<Long64_t> fast_acc_pim = {fReader, "acc_pim.accept_pim"};
 
 
    fReader.SetTree(tree);

@@ -30,7 +30,7 @@ class KerasAcceptanceModel : public PyAcceptanceModel {
     }
   }
 
-  void Train(DataLoader& dl){
+  void Train(DataLoader* dl){
     TPython::Bind( &_config, "kerasconf" );
     PyAcceptanceModel::Train(dl);
   }

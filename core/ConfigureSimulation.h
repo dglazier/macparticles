@@ -57,25 +57,45 @@ class ConfigureSimulation: public TNamed{
   }
 
   string  SimulationDir() const {
-    if(pretend_pdg.empty()==false)
-      return sim_dir + pretend_pdg + '/';
+    if(particle_name.empty()==false)
+      return sim_dir +'/'+ particle_name + '/';
       
     return sim_dir + current_pdg + '/';
   }
-  void PretendPdg(const string& pdg){
-    pretend_pdg=pdg;
+  string  AcceptanceName() const {
+    return "accept_"+GetParticleName();
   }
-  void AddPdg(const string& pdg){
-    std::cout<<" adding pdg "<<pdg<<std::endl;
-    current_pdg=pdg;
+  void SetParticleName(const string& pdg){
+    particle_name=pdg;
+  }
+  const string& GetParticleName() const {return particle_name;}
+
+  void AddPid(const string& pdg){
+    if((std::find(_pdgs.begin(),_pdgs.end(),pdg))!=_pdgs.end()){
+      UsePid(pdg);
+      return;
+    }
     _pdgs.push_back(pdg);
-    std::cout<<"done"<<std::endl;
+    _scaleFactors.push_back(1);
+    UsePid(pdg);
   }
-  void UsePdg(const string& pdg){
-    if(std::find(_pdgs.begin(),_pdgs.end(),pdg)==_pdgs.end())
-      Fatal("ConfigureSimulation::UsePdg","invalid pdg %s",pdg.c_str());
+  void UsePid(const string& pdg){
+    if((std::find(_pdgs.begin(),_pdgs.end(),pdg))==_pdgs.end())
+      Fatal("ConfigureSimulation::UsePid","invalid pdg %s",pdg.c_str());
+   
+    //find position in vector
+    auto it = std::find(_pdgs.begin(),_pdgs.end(),pdg);
+    currentPidIndex=it-_pdgs.begin();
 
     current_pdg = pdg;
+
+  }
+  Double_t CurrentScaleFactor() const {
+    return _scaleFactors[currentPidIndex];
+  }
+  void SetScaleFactor(Double_t val){
+    std::cout<<"ConfigureSimulation::SetScaleFactor "<<val<<" to index "<<currentPidIndex <<" of "<<_scaleFactors.size()<<std::endl;
+    _scaleFactors[currentPidIndex]=val;
   }
   bool ContainsPDG(const string& pdg){
     if(std::find(_pdgs.begin(),_pdgs.end(),pdg)!=_pdgs.end())
@@ -83,7 +103,10 @@ class ConfigureSimulation: public TNamed{
     return false;
   }
   
-  
+  const std::string& CurrentPid() const {
+    return current_pdg;
+  }
+
   std::string conf_name="configure";
   std::string training_dir= "training/"; //top level dir
  
@@ -94,8 +117,11 @@ class ConfigureSimulation: public TNamed{
   bool use_reweights = {false};
   bool doing_sim = {false};
 
+
 private:
-  
+  std::vector<Double_t > _scaleFactors; //one for each pdg training
+  Int_t currentPidIndex=0;
+
   std::string current_pdg = "";  //current pdg name being processed
   std::vector<std::string> _pdgs; //store all pdg name that have been trained.
 
@@ -105,7 +131,7 @@ private:
 
 
   std::string sim_dir; //top directory for simulation output
-  std::string pretend_pdg; //!for testing in case only 1 simulation for all pdgs
+  std::string particle_name; //!for testing in case only 1 simulation for all pdgs
 
   //Any TOject class used in py script needs ClassDef
   ClassDef(ConfigureSimulation,1);

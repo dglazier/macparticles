@@ -10,13 +10,14 @@ class TDTResConfig: public TObject{
  
   public:
 
+
   UInt_t n_rand_in=1;
   UInt_t n_trees=1;
   UInt_t n_regs=10;
   std::string model_name= "dt";
   std::vector<std::string> x_vars; //default 1
   datavars_t detailVars; //contains variable scaling info
-  
+  Bool_t applyExtraScale=false;
   //Any TOject class used in py script needs ClassDef
   ClassDef(TDTResConfig,1);
 };
@@ -32,17 +33,20 @@ class DecisionTreeResolModel : public ResolutionModel {
   }
 
   
-  void Train(DataLoader& dl) override {
+  void Train(DataLoader* dl) override {
+      
+    dl->InitTrainingData();
+
     gBenchmark->Start("resolution");
 
     
     //use rdataframe to create required columns
-    dl.AddNormalisedTruthVars(); //onto range 0-1
-    dl.AddDifferenceVars();  //truth-rec
-    _config.detailVars=dl.GetDetailedVars(); //copy for use in simulation
+    dl->AddNormalisedTruthVars(); //onto range 0-1
+    dl->AddDifferenceVars();  //truth-rec
+    _config.detailVars=dl->GetDetailedVars(); //copy for use in simulation
      
     TPython::Bind( &_config, "dtconf" );
-    TPython::Bind( &dl, "df" );
+    TPython::Bind( dl, "df" );
     TPython::Bind( ModelDir(), "save_dir" );
     TPython::Bind( ModelDir(), "out_dir" );
 
@@ -67,10 +71,10 @@ class DecisionTreeResolModel : public ResolutionModel {
  
   }
   
-  void AddRandomInputs(DataLoader& dl){
+  void AddRandomInputs(DataLoader* dl){
     for(UInt_t i=0;i<_config.n_rand_in;++i){
       auto rname=Form("rand_in%d",i);
-      dl.AddUniformRandomColumn(rname,0,1);
+      dl->AddUniformRandomColumn(rname,0,1);
       _config.x_vars.push_back(rname);
     }
   }
@@ -82,6 +86,9 @@ class DecisionTreeResolModel : public ResolutionModel {
   void SetTrainPy(const std::string& py){_trainPy=py;}
   void SetPredictPy(const std::string& py){_predictionPy=py;}
   
+  void SetApplyExtraScaling(){_config.applyExtraScale=true;}
+
+
 private:
   
   std::string _trainPy = "DTRes.py";

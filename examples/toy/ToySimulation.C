@@ -137,10 +137,10 @@ void ToySimulation(Long64_t Nevents=1.6E6){
     recPh=Ph;
     Resolution_ThPhi(P,recTh,recPh,i);
 
-    // Th=Th*TMath::DegToRad();
-    // Ph=Ph*TMath::DegToRad();
-    // recTh=recTh*TMath::DegToRad();
-    // recPh=recPh*TMath::DegToRad();
+    Th=Th*TMath::DegToRad();
+    Ph=Ph*TMath::DegToRad();
+    recTh=recTh*TMath::DegToRad();
+    recPh=recPh*TMath::DegToRad();
     // Th=Th;
     // Ph=Ph;
     // recTh=recTh;
