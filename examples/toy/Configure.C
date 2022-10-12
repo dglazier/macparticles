@@ -11,9 +11,9 @@
   info.recFrac = 1;
 
   //truth name, generated name, reconstructed name, title, range
-  info.variables = 	{{"truP","truP","recP","#pi+ momentum",0,10},
-			 {"truTheta","truTheta","recTheta","#pi+ #theta",0,TMath::Pi()},
-			 {"truPhi","truPhi","recPhi","#pi+ #phi",-TMath::Pi(),TMath::Pi()}};
+  info.variables ={{"truP","truP","recP","#pi+ momentum",0,10},
+		   {"truTheta","truTheta","recTheta","#pi+ #theta",0,TMath::Pi()},
+		   {"truPhi","truPhi","recPhi","#pi+ #phi",-TMath::Pi(),TMath::Pi()}};
 
   //variable to flag if particle was reconstructed in this event
   info.acceptVar = "accepted";

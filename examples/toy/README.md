@@ -14,11 +14,19 @@ Generates file : toy_reaction.root
 
 ## To train for a particular particle,
 
-First we run an overall configure script for the training data
+First we run an overall configure script for the training data. 
 
       macparticles Configure.C
 
-Now we can run acceptance training for each particle
+Now we can run acceptance training for each particle. 
+
+First argument pi+ => how this training is linked to a particualr particle when simulating.
+
+Second argument "training.root", the output file created in Configure.C to control the training data.
+
+Third argument "fast_sim" the output directory, should be somewhere safe for large files. Subdirectories will be created here for each training method and within those each particle training type.
+
+Note, acceptance training diagnostic plots will go to fast_sim/acceptance/pi+/acceptance_plots/
 
       macparticles 'RunAcceptanceTraining.C( "pi+","training.root","fast_sim" )'
 

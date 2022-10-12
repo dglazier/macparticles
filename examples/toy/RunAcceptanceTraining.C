@@ -20,9 +20,14 @@ void RunAcceptanceTraining(string particle,string filename,string simdir){
   ///Here can configure the DNN
   //train a keras DNN on the training data acceptance
   KerasAcceptanceModel accKeras(config,ProcessType::Acceptance);
-  accKeras.SetMaxEpochs(100);
+  accKeras.SetMaxEpochs(20);
   accKeras.SetLearnRate(1E-3);
-  accKeras.SetNetwork({512, 256,128, 64,32,16});
+  accKeras.SetNetwork({256,128, 64});
+  //slower but should be better
+  // accKeras.SetMaxEpochs(100);
+  // accKeras.SetLearnRate(1E-3);
+  // accKeras.SetNetwork({1024,512, 256,128, 64,32,16});
+
   //accKeras.DontTrain();
   accKeras.Train(dload.get());
   
