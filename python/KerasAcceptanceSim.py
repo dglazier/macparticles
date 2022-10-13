@@ -90,7 +90,7 @@ def rejection_sample(weights, nev):
     return mask.astype(int)
 
 accepted_mask  = rejection_sample(weights[:,0], sim_data.shape[0])
-print('KerasAcceptanceSim.py : save to  'str(out_dir)+"simulation_acceptances.root")
+print('KerasAcceptanceSim.py : save to  ',str(out_dir)+"simulation_acceptances.root")
 acc_rdf = ROOT.RDF.MakeNumpyDataFrame({str(part_acc) :accepted_mask})#,"fast_weight":weights_acc})
 acc_rdf.Snapshot("acceptance", str(out_dir)+"simulation_acceptances.root")
 
