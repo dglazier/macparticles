@@ -21,16 +21,18 @@ Additional training algorithms may be added to replace parts of the simulation.
 
 Requirements :
 
-  CERN ROOT
+  CERN ROOT (6.24)
 
-  python
+  python (3.8.10)
 
-  keras
+  keras (2.8.0)
 
-  scikitlearn
+  scikit-learn (1.0.2)
 
-  tensorflow
+  tensorflow (2.8.0)
  
+* parentheses indicate the versions tested with.
+
 Install :
 
       git clone https://github.com/dglazier/macparticles
