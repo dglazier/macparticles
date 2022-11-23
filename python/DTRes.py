@@ -24,6 +24,9 @@ x_array = np.vstack([x_data[xkey] for xkey in x_data.keys()]).T
 y_data = df.GetPredictionsFrame().AsNumpy(y_vars);
 y_array = np.vstack([y_data[ykey] for ykey in y_data.keys()]).T
 
+print('DTRes.py : will train with x events ',x_array.shape)
+print('DTRes.py : will train with y events ',y_array.shape)
+
 ############################################################################
 ###TRAIN MODELS AND SAVE TO DISC
 ############################################################################

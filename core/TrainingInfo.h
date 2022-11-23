@@ -11,11 +11,11 @@ class TrainingInfo : public TNamed{
   TrainingInfo()=default;
  TrainingInfo(const std::string& name):particle(name){}
  TrainingInfo(const std::string& name,const std::string& filename){
-   std::cout<<"TrainingInfo  getting "<<name<<" from "<<filename<<std::endl;
-     auto file = std::unique_ptr<TFile>(TFile::Open(filename.data()));
-     *this = *file->Get<TrainingInfo>(name.data());
-   }
-   //   const std::string objectName{"TrainingInfo"}; 
+   std::cout<<"TrainingInfo:  getting "<<name<<" from "<<filename<<std::endl;
+   auto file = std::unique_ptr<TFile>(TFile::Open(filename.data()));
+   *this = *file->Get<TrainingInfo>(name.data());
+ }
+  
    std::string particle;
    std::string treeName;
    std::string reconFile;
@@ -51,30 +51,12 @@ class TrainingInfo : public TNamed{
      auto file = std::unique_ptr<TFile>(new TFile(filename.data(),"UPDATE"));
      if(file->IsOpen()==kFALSE)
        file.reset(new TFile(filename.data(),"recreate"));
-     cout<<"file "<<file.get()<<" "<<file->IsOpen()<<endl;
-     //     file->WriteTObject(this,particle.data());
      Write(particle.data());
+     std::cout<<"TrainingInfo:  wrote info for "<<particle <<" to "<<filename<<std::endl;
    }
    ///////////////////////////////////////////////////////////////////////////////
-   /* DataLoader* TrainingData(){ */
-   /*   if(genFile.empty()==false){ */
-   /*     dataLoader.reset(new DataWithAccAndGenFiles(treeName,reconFile,genFile)); */
-   /*     dynamic_cast<DataWithAccAndGenFiles*>(dataLoader.get())->SetAccFractionToProcess(recFrac); */
-   /*     dynamic_cast<DataWithAccAndGenFiles*>(dataLoader.get())->SetGenFractionToProcess(genFrac); */
-   /*   } */
-   /*   else{ */
-   /*     dataLoader.reset(new DataWithAcceptanceVar(treeName,reconFile,acceptVar)); */
-   /*     dynamic_cast<DataWithAcceptanceVar*>(dataLoader.get())->SetFractionToProcess(recFrac); */
-   /*   } */
-   /*   dataLoader->ConfigVars(variables); */
-   /*   dataLoader->Filter(recFilter); */
-   /*   return dataLoader.get(); */
-   /* } */
-  
-
+ 
  private:
-
-   // std::shared_ptr<DataLoader> dataLoader;//!
 
 
     ClassDef( TrainingInfo,1);

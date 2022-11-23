@@ -11,10 +11,10 @@ from joblib import load, dump
 from platform import python_version
 
 print('Keras.py  AcceptanceTraining')
-print(tf.__version__)
-print(keras.__version__)
-print('python version ')
-print(python_version())
+#print(tf.__version__)
+#print(keras.__version__)
+#print('python version ')
+#print(python_version())
 ############################################################################
 ###PREPARE DATA
 ############################################################################
