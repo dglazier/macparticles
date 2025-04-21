@@ -1,0 +1,3 @@
+*.root
+pred_output/
+training_output/

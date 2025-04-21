@@ -42,6 +42,9 @@ data_array = np.hstack((acc_array,all_array)).T
 
 print('Keras.py : accepted events ',acc_array.shape)
 print('Keras.py : generated events ',all_array.shape)
+#print('Keras.py : all training events ',data_array.shape)
+print('Keras.py : input shape ',data_array[:,:nvars].shape)
+print('Keras.py : output shape ',data_array[:,nvars].shape)
 ##########################################################################
 ###GAUSSIAN TRANSFORM TRAINING VARIABLES
 ##########################################################################
@@ -89,22 +92,23 @@ dnn.compile(
     metrics=[keras.metrics.BinaryCrossentropy()]
 )
 
+
 earlystopping = callbacks.EarlyStopping(monitor ="loss", 
                                         mode ="min", patience = 5, 
                                         restore_best_weights = True)
 
-progress = callbacks.ModelCheckpoint(filepath=saveto +"check", verbose=1)
+progress = callbacks.ModelCheckpoint(filepath=saveto +"check.keras", verbose=1)
 
 #data_array[:,:nvars] => train with gaussian transform vars, split on data_array[:,nvars]='flag'
-history = dnn.fit(data_array[:,:nvars], data_array[:,nvars], 
+history = dnn.fit(data_array[:,:nvars], data_array[:,nvars].reshape((-1,1)), 
                   batch_size = n_batch,
                   epochs = n_epochs,
                   callbacks = [earlystopping,progress]
 )
 
 #training done
-print('Keras.py : save dnn model to ',saveto + dnn_name )
-dnn.save(saveto + dnn_name )
+print('Keras.py : save dnn model to ',saveto + dnn_name + '.keras' )
+dnn.save(saveto + dnn_name + '.keras' )
 
 ##########################################################################
 ###CALCULATE NEW ACCEPTANCES
@@ -129,7 +133,7 @@ def rejection_sample(weights, nev):
 fast_acc = rejection_sample(weights_acc[:,0], all_array.T.shape[0])
 
 #save to root file via rdataframe
-acc_rdf = ROOT.RDF.MakeNumpyDataFrame({"fast_accept":fast_acc,"fast_weight":weights_acc})
+acc_rdf = ROOT.RDF.FromNumpy({"fast_accept":fast_acc,"fast_weight":weights_acc})
 acc_rdf.Snapshot(dnn_name, saveto+"training_acceptances.root")
 
 #To run another script must make sure all new objects have been deleted

@@ -117,7 +117,6 @@ class ConfigureSimulation: public TNamed{
   bool use_reweights = {false};
   bool doing_sim = {false};
 
-
 private:
   std::vector<Double_t > _scaleFactors; //one for each pdg training
   Int_t currentPidIndex=0;
