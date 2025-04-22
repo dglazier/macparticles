@@ -172,6 +172,49 @@ def plotComp(gemc,fast,ranges,titles,names,units,print_dir,endName,all=np.zeros(
       plt.xlabel(titles[j]+' '+units[j])
       plt.savefig(print_dir+'Comp_'+names[j]+endName+'.png')
 
+def plot2DComp(gemc,fast,v1,v2,titles,units,name,ranges,print_dir,endName,vmax=100):
+
+    nBins=75
+
+    h1err, xedges1err, yedges1err, image1err=plt.hist2d(gemc[:,v1], gemc[:,v2], range=(ranges[v1],ranges[v2]), bins=((nBins,nBins)))
+    h2err, xedges2err, yedges2err, image2err=plt.hist2d(fast[:,v1], fast[:,v2], range=(ranges[v1],ranges[v2]), bins=((nBins,nBins)))
+
+    fig, axs = plt.subplots(1, 3, figsize=(45, 15), sharex=True, sharey=True,
+                          tight_layout=True)
+
+
+    #cmin=1
+    h1, xedges1, yedges1, image1=axs[0].hist2d(gemc[:,v1], gemc[:,v2], range=(ranges[v1],ranges[v2]), bins=((nBins,nBins)),vmin=-10,vmax=vmax)#, norm=matplotlib.colors.LogNorm()) ,,vmin=-10,vmax=10
+    
+    axs[0].set_xlabel(titles[v1]+units[v1])
+    axs[0].set_ylabel(titles[v2]+units[v2])
+    axs[0].set_title("GEMC")
+    fig.colorbar(image1, ax=axs[0])
+
+    # As well as define normalization of the colors
+    h2, xedges2, yedges2, image2=axs[1].hist2d(fast[:,v1], fast[:,v2], range=(ranges[v1],ranges[v2]), bins=((nBins,nBins)),vmin=-10,vmax=vmax)#, norm=matplotlib.colors.LogNorm())
+    
+    axs[1].set_xlabel(titles[v1]+units[v1])
+    axs[1].set_ylabel(titles[v2]+units[v2])
+    axs[1].set_title("FastMC")
+    fig.colorbar(image2, ax=axs[1])
+
+    res=(h1-h2).T
+    std=np.sqrt(np.abs(h1err) + np.abs(h2err)).T #sum of squares of sqrt(h1err) and sqrt(h2err)
+    stdb=std.copy()
+    stdb[stdb==0]=1
+    res=res/stdb
+    res[std==0]=0
+
+    #print(h1)
+    cmesh=axs[2].pcolormesh(xedges1, yedges1, res,vmin=-3,vmax=3)
+    axs[2].set_xlabel(titles[v1]+units[v1])
+    axs[2].set_ylabel(titles[v2]+units[v2])
+    axs[2].set_title('Pull')
+    fig.colorbar(cmesh, ax=axs[2])
+
+    plt.savefig(print_dir+name+endName+'.png', bbox_inches="tight")
+
 plt.rcParams.update({'font.size': 40,
                     #'font.family':  'Times New Roman',
                     'legend.edgecolor': 'white',
@@ -242,6 +285,14 @@ gen=gen[gen[:,0]>2]
 
 plotComp(gemc_rec,fast_rec,ranges,titles,names,units,print_dir,endName,all=gen)
 plotComp(gemc_rec,fast_rec,ranges,titles,names,units,print_dir,'_ReconVars'+endName)
+
+for i in range(0,3):
+  pVarNb=i*3+0
+  thetaVarNb=i*3+1
+  phiVarNb=i*3+2
+  plot2DComp(gemc_rec,fast_rec,pVarNb,thetaVarNb,titles,units,names[pVarNb]+"vs"+names[thetaVarNb],ranges,print_dir,endName,vmax=100)
+  plot2DComp(gemc_rec,fast_rec,pVarNb,phiVarNb,titles,units,names[pVarNb]+"vs"+names[phiVarNb],ranges,print_dir,endName,vmax=100)
+  plot2DComp(gemc_rec,fast_rec,thetaVarNb,phiVarNb,titles,units,names[thetaVarNb]+"vs"+names[phiVarNb],ranges,print_dir,endName,vmax=100)
 
 #MM2,Q2,t,x,W
 gen_exc=calcExc(gen,10.6)
