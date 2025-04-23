@@ -32,9 +32,9 @@ print('KerasAcceptanceSim.py : number of  events to process ',sim_data.shape)
 accdir = acc_dir.GetName() + '/'
 
 
-print('KerasAcceptanceSim.py : attempt to load model , '+accdir+model_name.GetName())
+print('KerasAcceptanceSim.py : attempt to load model , '+accdir+model_name.GetName()+'.keras')
 
-acc_model= keras.models.load_model(accdir + model_name.GetName())
+acc_model= keras.models.load_model(accdir + model_name.GetName()+'.keras')
 
 ##########################################################################
 ###USE BDT REWEIGHTER
@@ -91,7 +91,7 @@ def rejection_sample(weights, nev):
 
 accepted_mask  = rejection_sample(weights[:,0], sim_data.shape[0])
 print('KerasAcceptanceSim.py : save to  ',str(out_dir)+"simulation_acceptances.root")
-acc_rdf = ROOT.RDF.MakeNumpyDataFrame({str(part_acc) :accepted_mask})#,"fast_weight":weights_acc})
+acc_rdf = ROOT.RDF.FromNumpy({str(part_acc) :accepted_mask})#,"fast_weight":weights_acc})
 acc_rdf.Snapshot("acceptance", str(out_dir)+"simulation_acceptances.root")
 
 del dfdata

@@ -17,6 +17,15 @@ class ResolutionPlotter {
     gSystem->Exec(Form("mkdir -p %s",_saveDir.data()));
   }
 
+  ResolutionPlotter(DataLoader& data,ConfigureSimulation& conf, Double_t CanvasWidth, double_t CanvasHeight, vector<Double_t> diffRanges):_data{&data},_conf{&conf}{
+    _saveDir=_conf->ResolutionDir()+"/resolution_plots/";
+    gSystem->Exec(Form("mkdir -p %s",_saveDir.data()));
+    _canvasWidth=CanvasWidth;
+    _canvasHeight=CanvasHeight;
+    _diffRanges=diffRanges;
+    //cout<<"Canvas Width "<<_canvasWidth<<" Height "<<_canvasHeight<<endl;
+  }
+
   void AddReconstructedCols(const string& fileDir){
     auto vars=_data->GetDetailedVars();
 
@@ -78,25 +87,31 @@ class ResolutionPlotter {
        h1d = accEvents.Histo1D({_fullOrigVars[i].data(),vars[i].title.data(),200,var.min,var.max},_fullOrigVars[i].data());
        _vhistFullOrig.push_back(h1d);
      }
+
+      Double_t drange=0.5*valStdev[i];
+      if(_diffRanges.size()!=0){
+        drange=_diffRanges[i];
+      }
+
      //1D resolutions
      //need to find max and min values
-     h1d = accEvents.Histo1D({_diffFastVars[i].data(),(string("Fast #Delta")+vars[i].title).data(),100,-0.5*valStdev[i],0.5*valStdev[i]},_diffFastVars[i].data());
+     h1d = accEvents.Histo1D({_diffFastVars[i].data(),(string("Fast #Delta")+vars[i].title).data(),100,-drange,drange},_diffFastVars[i].data());
      _vhistDiffFast.push_back(h1d);
      if(_fastOnly==kFALSE) {
-       h1d = accEvents.Histo1D({_diffOrigVars[i].data(),(string("Original #Delta")+vars[i].title).data(),100,-0.5*valStdev[i],0.5*valStdev[i]},_diffOrigVars[i].data());
+       h1d = accEvents.Histo1D({_diffOrigVars[i].data(),(string("Original #Delta")+vars[i].title).data(),100,-drange,drange},_diffOrigVars[i].data());
        _vhistDiffOrig.push_back(h1d);
      }
      //2D resolutions versus variable
-     auto h2d = accEvents.Histo2D<Double_t, Double_t >({(_diffFastVars[i]+"2D").data(),(string("Fast #Delta")+vars[i].title+" v "+vars[i].title).data(),50,var.min,var.max,50,-0.5*valStdev[i],0.5*valStdev[i]}, _fullFastVars[i].data() ,_diffFastVars[i].data());
+     auto h2d = accEvents.Histo2D<Double_t, Double_t >({(_diffFastVars[i]+"2D").data(),(string("Fast #Delta")+vars[i].title+" v "+vars[i].title).data(),50,var.min,var.max,50,-drange,drange}, _fullFastVars[i].data() ,_diffFastVars[i].data());
      _vhist2DDiffFast.push_back(h2d);
      if(_fastOnly==kFALSE) {
-       h2d = accEvents.Histo2D({(_diffOrigVars[i]+"2D").data(),(string("Original #Delta")+vars[i].title+" v "+vars[i].title).data(),50,var.min,var.max,50,-0.5*valStdev[i],0.5*valStdev[i]}, _fullOrigVars[i].data(), _diffOrigVars[i].data());
+       h2d = accEvents.Histo2D({(_diffOrigVars[i]+"2D").data(),(string("Original #Delta")+vars[i].title+" v "+vars[i].title).data(),50,var.min,var.max,50,-drange,drange}, _fullOrigVars[i].data(), _diffOrigVars[i].data());
        _vhist2DDiffOrig.push_back(h2d);
      }
 
   }
 
-  _canvas=new TCanvas(Form("FullVariables")); //ROOT will delete this  
+  _canvas=new TCanvas(Form("FullVariables"),Form("FullVariables"),100, 100, _canvasWidth,_canvasHeight); //ROOT will delete this  
   auto ncols=std::ceil(((float)vars.size())/3); //max 3 columns
   _canvas->Divide(3,ncols);
 
@@ -121,7 +136,7 @@ class ResolutionPlotter {
    }
    _canvas->SaveAs((_saveDir+_canvas->GetName()+".png").data());
   
-   _canvas=new TCanvas(Form("DeltaVariables")); //ROOT will delete this  
+   _canvas=new TCanvas(Form("DeltaVariables"),Form("DeltaVariables"),100, 100, _canvasWidth,_canvasHeight); //ROOT will delete this  
    _canvas->Divide(3,ncols);
   //Plot the resolution variables
    for(UInt_t i=0;i<vars.size();++i){
@@ -145,8 +160,8 @@ class ResolutionPlotter {
    _canvas->SaveAs((_saveDir+_canvas->GetName()+".png").data());
   
 
-   _canvas=new TCanvas(Form("FastVariables2D")); //ROOT will delete this  
-   auto _canvas2=new TCanvas(Form("OrigVariables2D")); //ROOT will delete this  
+   _canvas=new TCanvas(Form("FastVariables2D"),Form("FastVariables2D"),100, 100, _canvasWidth,_canvasHeight); //ROOT will delete this  
+   auto _canvas2=new TCanvas(Form("OrigVariables2D"),Form("OrigVariables2D"),100, 100, _canvasWidth,_canvasHeight); //ROOT will delete this  
 
    _canvas->Divide(3,ncols);
    _canvas2->Divide(3,ncols);
@@ -185,6 +200,9 @@ class ResolutionPlotter {
   dfth1ds_t _vhistDiffOrig;
   dfth2ds_t _vhist2DDiffFast;
   dfth2ds_t _vhist2DDiffOrig;
+  Double_t _canvasWidth{700};
+  Double_t _canvasHeight{500};
+  vector<Double_t> _diffRanges;
   
 Bool_t _fastOnly=kFALSE;
 };

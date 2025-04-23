@@ -92,7 +92,7 @@ y_dict = {}
 y_vars=df.GetReconVars()
 
 #unnormalise predictions going back to real variable units
-for vari in range (0,3):
+for vari in range (0,y_pred.shape[1]):
 
     off = df.GetNormDiffOff(vari)
     scale =  df.GetNormDiffRange(vari)
@@ -108,7 +108,7 @@ for A, B in zip(y_vars, y_pred.T):
 
 print('DTResPred.py : done ',y_dict)
 
-pred_rdf = ROOT.RDF.MakeNumpyDataFrame(y_dict)
+pred_rdf = ROOT.RDF.FromNumpy(y_dict)
 pred_rdf.Snapshot("recon", str(out_dir)+"predictions.root")
 
 del whichModel

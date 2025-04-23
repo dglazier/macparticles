@@ -32,9 +32,21 @@ class DecisionTreeResolModel : public ResolutionModel {
 
   }
 
+  void AddFilter(std::string opt){
+    //  _currNode = DataFrame().Filter(opt.data());
+    if(std::find(_filters.begin(),_filters.end(),opt)==_filters.end())
+      _filters.push_back(opt);
+  }
   
+
   void Train(DataLoader* dl) override {
       
+    if(_filters.size()!=0){
+      for(string filter: _filters){
+        dl->Filter(filter);
+      }
+    }
+
     dl->InitTrainingData();
 
     gBenchmark->Start("resolution");
@@ -94,6 +106,7 @@ private:
   std::string _trainPy = "DTRes.py";
   std::string _predictionPy = "DTResPred.py";
   std::string _pyDir;
+  std::vector<std::string> _filters;
 
   TDTResConfig _config;
   

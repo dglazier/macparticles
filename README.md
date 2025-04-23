@@ -93,5 +93,16 @@ Example code for TrainingInfo :
 	//save in training.root file. This argument can then be given to specific training scripts
 	info.WriteTo("training.root");
 
+Training Sample
+===============
 
+The training sample can be set up using either single particles or final states composed of several particles. These come with advantages and drawbacks.
+
+Training with single particles reduces the number of dimensions involved in the training. This will typically lead to better reproducing the multi-dimensional correlations that exist between the momentum and direction of a particle, and non-trivial dependencies of the resolution in given variables on other training variables.
+
+Training with multiple final state particles reduces the number of trained models (ie N models for one final state instead of NxM models for M final state particles), which in turn reduces training and prediction times. Multi-particle effects (eg overlapping tracks) also affect the acceptance modelling and need to be taken into account, these are automically included when training on final states. The larger phase space that comes from added variables will also help produce smoother resolution distributions, although this can easily be achieved by adding random inputs.
+
+As such, it is recommended to first train on single particles, and adding a correction for multi-particle effects, to achieve the best fidelity in reproducing the training data. However, training with multiple particles will still achieve good fidelity. This route can be preferred for eg toy simulation studies where the simpler set-up and shorter training and prediction times are desirable over optimal fidelity.
+
+The toy example works on a single particle basis. The dvcs example is trained using all DVCS final state particles (electron, proton, photon). The clas12kkpi example is a combination of both, first training using single particles before accounting for multi-particle effects with a correction to the acceptance derived using all final state particles.
 

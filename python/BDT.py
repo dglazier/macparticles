@@ -106,7 +106,7 @@ fast_acc = rejection_sample(weights_acc, data_array)
 print('BDT.py : acceptances ',fast_acc.shape)
 
 #save to root file via rdataframe
-acc_rdf = ROOT.RDF.MakeNumpyDataFrame({"fast_accept":fast_acc,"fast_weight":weights_acc})
+acc_rdf = ROOT.RDF.FromNumpy({"fast_accept":fast_acc,"fast_weight":weights_acc})
 acc_rdf.Snapshot(bdtconf.bdt_name, saveto+"training_acceptances.root")
 
 #To run another script must make sure all new objects have been deleted

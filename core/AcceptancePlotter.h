@@ -16,6 +16,13 @@ class AcceptancePlotter {
     _saveDir=_conf->AcceptanceDir()+"/acceptance_plots/";
     gSystem->Exec(Form("mkdir -p %s",_saveDir.data()));
   }
+
+  AcceptancePlotter(DataLoader& data,ConfigureSimulation& conf, Double_t CanvasWidth, double_t CanvasHeight):_data{&data},_conf{&conf}{
+    _saveDir=_conf->AcceptanceDir()+"/acceptance_plots/";
+    gSystem->Exec(Form("mkdir -p %s",_saveDir.data()));
+    _canvasWidth=CanvasWidth;
+    _canvasHeight=CanvasHeight;
+  }
   
 
   //  void DefinePlots(const std::string& varname,ROOT::RDF::RNode plotter){
@@ -40,7 +47,7 @@ class AcceptancePlotter {
     Int_t nplots = _hfast.size();
     auto nvars=_data->GetTruthVars().size();
 
-    _canvas=new TCanvas(Form("%d_of_%d_in_%s",_islice+1,_nslices,_sliceVar.data())); //ROOT will delete this
+    _canvas=new TCanvas(Form("%d_of_%d_in_%s",_islice+1,_nslices,_sliceVar.data()),Form("%d_of_%d_in_%s",_islice+1,_nslices,_sliceVar.data()),100,100,_canvasWidth,_canvasHeight); //ROOT will delete this
     auto ncols=std::ceil(((float)nplots)/nrows/_nslices);
      _canvas->Divide(ncols,nrows);
 
@@ -151,4 +158,6 @@ private :
   Int_t _nslices=1;
   std::string _sliceVar;
   std::string _saveDir;
+  Double_t _canvasWidth{700};
+  Double_t _canvasHeight{500};
 };

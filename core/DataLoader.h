@@ -436,7 +436,7 @@ protected:
   std::function<double(std::vector<double>&,Long64_t&)> _copyColumn;
   //std::vector<double> _extraBranchData;
   //Long64_t _extraBranchEntry=0;
-  std::vector<DataFromTreeBranch> _extraBranches{3};
+  std::vector<DataFromTreeBranch> _extraBranches{21}; //max 7 parts with 3 vars?
   Int_t _iExtra=0;
   Int_t _nRangeSigma=10; //2 * 5 sigma
 
